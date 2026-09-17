@@ -1,0 +1,754 @@
+<title>음운규칙 교재 제작 가이드</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap">
+<style>
+  :root{
+    --bg:#F7F2E5;
+    --surface:#FFFDF7;
+    --surface-2:#FBF6EA;
+    --ink:#232840;
+    --ink-soft:#5B5F76;
+    --ink-faint:#8A8D9E;
+    --accent:#E2AC30;
+    --accent-ink:#3A2C08;
+    --accent-deep:#B4791A;
+    --ok:#3F8F6C;
+    --ok-bg:#E4F2E9;
+    --ok-line:#BFDECB;
+    --no:#C15C82;
+    --no-bg:#FBEAF1;
+    --no-line:#EFC4D6;
+    --line:#E5DCC4;
+    --line-soft:#EFE8D6;
+    --shadow:0 1px 2px rgba(35,40,64,.06),0 6px 18px rgba(35,40,64,.06);
+    --radius:14px;
+    --font-display:'Gowun Batang', Georgia, serif;
+    --font-body:'Gowun Dodum', 'Apple SD Gothic Neo', sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14172A;
+      --surface:#1C2036;
+      --surface-2:#20253E;
+      --ink:#ECE7D6;
+      --ink-soft:#B7B9CC;
+      --ink-faint:#82859C;
+      --accent:#EFC155;
+      --accent-ink:#241B04;
+      --accent-deep:#F4CE72;
+      --ok:#7BC79E;
+      --ok-bg:#1E332A;
+      --ok-line:#2E4A3B;
+      --no:#E993B5;
+      --no-bg:#3A2230;
+      --no-line:#523044;
+      --line:#333A57;
+      --line-soft:#272C46;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14172A;
+    --surface:#1C2036;
+    --surface-2:#20253E;
+    --ink:#ECE7D6;
+    --ink-soft:#B7B9CC;
+    --ink-faint:#82859C;
+    --accent:#EFC155;
+    --accent-ink:#241B04;
+    --accent-deep:#F4CE72;
+    --ok:#7BC79E;
+    --ok-bg:#1E332A;
+    --ok-line:#2E4A3B;
+    --no:#E993B5;
+    --no-bg:#3A2230;
+    --no-line:#523044;
+    --line:#333A57;
+    --line-soft:#272C46;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    margin:0;
+    padding:0 16px;
+    line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:var(--font-display);color:var(--ink);text-wrap:balance;margin:0}
+  p{margin:0 0 12px}
+  a{color:var(--accent-deep)}
+  .wrap{max-width:860px;margin:0 auto}
+
+  /* ---------- top bar / nav ---------- */
+  .topbar{
+    position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    padding-block:10px;
+  }
+  .topbar-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:14px}
+  .brand{font-family:var(--font-display);font-weight:700;font-size:15px;white-space:nowrap;flex:none}
+  .brand small{display:block;font-family:var(--font-body);font-weight:400;font-size:10.5px;color:var(--ink-faint);letter-spacing:.02em}
+  .navpills{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+  .navpills::-webkit-scrollbar{display:none}
+  .navpills a{
+    flex:none;font-size:12.5px;color:var(--ink-soft);text-decoration:none;
+    padding:6px 11px;border-radius:999px;border:1px solid var(--line);white-space:nowrap;background:var(--surface);
+  }
+  .navpills a:hover{border-color:var(--accent-deep);color:var(--ink)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:34px 0 8px;display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+  .hero-text{flex:1 1 320px;min-width:260px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+    color:var(--accent-deep);letter-spacing:.06em;margin-bottom:10px;
+  }
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  h1.title{font-size:clamp(26px,4.4vw,36px);line-height:1.24;margin-bottom:12px}
+  .lede{font-size:15.5px;color:var(--ink-soft);max-width:46ch}
+  .hero-img{
+    flex:1 1 220px;min-width:200px;max-width:300px;margin:0 auto;
+    background:var(--surface);border:1px solid var(--line);border-radius:18px;
+    padding:14px;box-shadow:var(--shadow);
+  }
+  .hero-img img{display:block;width:100%;height:auto;border-radius:8px}
+  .hero-img figcaption{font-size:12px;color:var(--ink-faint);text-align:center;margin-top:8px}
+
+  .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px}
+  .chip{
+    font-size:12px;padding:5px 10px;border-radius:999px;background:var(--surface-2);
+    border:1px solid var(--line);color:var(--ink-soft);
+  }
+
+  /* ---------- sections ---------- */
+  section{padding:38px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:none}
+  .sec-head{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+  .sec-num{font-family:var(--font-display);font-size:13px;color:var(--accent-deep);font-weight:700}
+  h2.sec-title{font-size:clamp(20px,3vw,25px)}
+  .sec-sub{color:var(--ink-soft);font-size:14px;margin:6px 0 22px;max-width:64ch}
+
+  h3.sub-title{font-size:16.5px;margin:26px 0 10px;display:flex;align-items:center;gap:8px}
+  h3.sub-title .letter{
+    font-family:var(--font-display);font-size:12px;color:var(--surface);background:var(--ink-soft);
+    width:19px;height:19px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;flex:none;
+  }
+
+  /* ---------- cards / boxes ---------- */
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;box-shadow:var(--shadow);margin:14px 0;
+  }
+  .box{border-radius:12px;padding:14px 16px;margin:14px 0;border:1px solid var(--line-soft);background:var(--surface-2);font-size:14px}
+  .box.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ink)}
+  .box.no{background:var(--no-bg);border-color:var(--no-line);color:var(--ink)}
+  .box-label{font-weight:700;font-size:12.5px;letter-spacing:.02em;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+  .box.ok .box-label{color:var(--ok)}
+  .box.no .box-label{color:var(--no)}
+
+  /* ---------- workflow steps ---------- */
+  .flow{display:flex;gap:0;flex-wrap:wrap;margin:18px 0 6px}
+  .flow-step{
+    flex:1 1 130px;background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:13px 14px;position:relative;font-size:13px;margin:4px;
+  }
+  .flow-step .n{
+    font-family:var(--font-display);font-weight:700;color:var(--accent-deep);font-size:13px;
+    display:block;margin-bottom:4px;
+  }
+
+  /* ---------- tables ---------- */
+  .tbl-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px}
+  table{width:100%;border-collapse:collapse;font-size:13.2px;min-width:480px}
+  thead th{
+    background:var(--accent);color:var(--accent-ink);text-align:left;font-weight:700;
+    padding:9px 12px;font-size:12.5px;letter-spacing:.01em;white-space:nowrap;
+  }
+  tbody td{padding:9px 12px;border-top:1px solid var(--line-soft);vertical-align:top;color:var(--ink)}
+  tbody tr:nth-child(even){background:var(--surface-2)}
+  td.num,th.num{font-variant-numeric:tabular-nums;text-align:right}
+
+  /* ---------- definition grid (rule facts) ---------- */
+  .facts{display:grid;grid-template-columns:96px 1fr;gap:0;font-size:13.6px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .facts > div{padding:10px 12px;border-top:1px solid var(--line-soft)}
+  .facts > div:nth-child(-n+2){border-top:none}
+  .facts dt{background:var(--surface-2);font-weight:700;color:var(--ink-soft);font-size:12px}
+  .facts dd{margin:0;background:var(--surface)}
+
+  /* ---------- word chips ---------- */
+  .words{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+  .word{
+    font-size:13px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
+    padding:4px 9px;white-space:nowrap;
+  }
+  .word b{font-weight:700}
+  .word .ph{color:var(--accent-deep);font-weight:700}
+
+  /* ---------- rule accordions ---------- */
+  .rule{
+    border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);
+    margin:12px 0;box-shadow:var(--shadow);overflow:hidden;
+  }
+  .rule summary{
+    list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px 18px;
+  }
+  .rule summary::-webkit-details-marker{display:none}
+  .rule-badge{
+    font-family:var(--font-display);font-weight:700;font-size:15px;flex:none;
+    width:34px;height:34px;border-radius:10px;background:var(--accent);color:var(--accent-ink);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .rule-head-text{flex:1;min-width:0}
+  .rule-head-text .rname{font-family:var(--font-display);font-size:17px;font-weight:700}
+  .rule-head-text .rmeta{font-size:12px;color:var(--ink-faint);margin-top:2px}
+  .rule-chevron{flex:none;color:var(--ink-faint);font-size:13px;transition:transform .18s ease}
+  .rule[open] .rule-chevron{transform:rotate(180deg)}
+  .rule-body{padding:0 18px 20px}
+  .rule-key{
+    display:flex;align-items:baseline;gap:10px;background:var(--surface-2);border:1px solid var(--line-soft);
+    border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:14px;
+  }
+  .rule-key .kw{font-family:var(--font-display);font-size:19px;font-weight:700}
+  .rule-key .ph{color:var(--accent-deep);font-weight:700;font-size:15px}
+
+  .metaphor{display:flex;gap:12px;align-items:flex-start;background:var(--surface-2);border:1px dashed var(--line);border-radius:12px;padding:13px 14px;margin-top:14px}
+  .metaphor .icon{
+    flex:none;width:38px;height:38px;border-radius:10px;background:var(--accent);color:var(--accent-ink);
+    display:flex;align-items:center;justify-content:center;font-size:17px;
+  }
+  .metaphor .txt{font-size:13.4px}
+  .metaphor .txt .mname{font-weight:700;margin-bottom:3px}
+  .missing{background:var(--no-bg);border:1px dashed var(--no-line);border-radius:12px;padding:12px 14px;margin-top:14px;font-size:13px;color:var(--ink)}
+  .missing b{color:var(--no)}
+
+  /* ---------- checklist ---------- */
+  .checklist{list-style:none;margin:14px 0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .checklist li{
+    display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);
+    border-radius:10px;padding:10px 13px;font-size:13.8px;
+  }
+  .checklist input{margin-top:3px;flex:none;width:16px;height:16px;accent-color:var(--ok)}
+  .checklist .qn{color:var(--ink-faint);font-size:11.5px;font-weight:700;flex:none;width:16px}
+
+  /* ---------- refs ---------- */
+  .refs{font-size:13px;color:var(--ink-soft);display:flex;flex-direction:column;gap:9px}
+  .refs li{padding-left:1.3em;text-indent:-1.3em}
+
+  footer{padding:30px 0 46px;color:var(--ink-faint);font-size:12px;border-top:1px solid var(--line)}
+
+  @media (max-width:560px){
+    .facts{grid-template-columns:82px 1fr}
+    .hero{padding-top:22px}
+  }
+</style>
+
+<div class="topbar">
+  <div class="topbar-inner wrap" style="padding:0 16px">
+    <div class="brand">음운규칙 교재 가이드<small>석사생 제작 안내서</small></div>
+    <nav class="navpills">
+      <a href="#intro">소개</a>
+      <a href="#p1">원칙1·자극선정</a>
+      <a href="#p2">원칙2·일반화</a>
+      <a href="#p3">원칙3·과잉일반화</a>
+      <a href="#p4">원칙4·중재스크립트</a>
+      <a href="#rules">8개 규칙</a>
+      <a href="#words">낱말은행</a>
+      <a href="#checklist">체크리스트</a>
+      <a href="#refs">참고문헌</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section id="intro">
+    <div class="hero">
+      <div class="hero-text">
+        <span class="eyebrow">음운변동 중재 교재 · 총론 ver.3 기반</span>
+        <h1 class="title">말이 쉬워지는 규칙,<br>교재로 옮기는 법</h1>
+        <p class="lede">이 안내서는 「음운변동 중재 교재」 총론을 석사 선생님이 실제 학습지·중재 스크립트로 옮길 수 있도록 재구성한 실무 가이드입니다. 왜 이렇게 만드는지(원칙)와 무엇을 만드는지(8개 규칙 단원)를 함께 담았습니다.</p>
+        <div class="meta-row">
+          <span class="chip">대상: 석사 선생님</span>
+          <span class="chip">단원 8개 · 규칙 8종</span>
+          <span class="chip">단원당 3p 구성</span>
+        </div>
+      </div>
+      <figure class="hero-img">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAg8AAAGkCAYAAAC2FsYSAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAHz0SURBVHhe7d13dFTF38fxd5JN770ACRB67733plgQEQUVGwoKqOgPC2IXFOyPKDZAESkKSO+9dwiEEkJCeu/ZZHezzx8hm+xNIUtJ/b7OuUcyM3ezidm7n52ZO2Om1Wr0CCGEEEKUk7myQAghhBCiLBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCFENbV7925atmxF06bNqFu3HkuX/kH37j1o2rQZLi6ubNu2DQCNRkNcXByZmZnKh7gtEh6EEEKIaqpfv34EBZ1nz57dBAQE0Lp1Kw4dOsiePbtp2bIlnp6eAAQFBdG2bTt++mmR8iFui4QHIYQQopqLiYlBo8nF2dkFAJ1OR15enrLZXSPhQQghhKiGCoYiYmJiuHjxIvb2DuTl5RETE8PZs2fJyVGjUqlQq9V4enri4uJCo0aByoe5LWZarUavLBRCCCFE1XbhwgWeeeZZ0tLSlFVGvv/+O5o1a8agQYP5/PN5DB8+XNnEZBIehBBCiGpOr9eTnJxMbm4uFhYWuLm5YWFhYaiPiYm5q+FBhi2EEEKIamzbtm00atSY9u07MHDgIHr16o2/fwDffvsdGo0GAFtbW8aMeZi6desqT78tEh6EEEKIaiouLo633nqL77//jrCw6wQFnefSpWB27tzJ4sW/ExQUBEBKSirZ2dnExMQoH+K2SHgQQgghqimVSoW1tQ0nTpwwzH1Qq9UcOHCAnJxc7O0dAEhOTmLJkqWcP58fJu6UzHkQQgghqrHIyEjmzp3Lhg0bSUhIwN7enl69ejFr1v9o3769svldIeFBCCGEuIdSs/O4FJdDlwBbZVW1JcMWQgghxD3075kMVp3KUBZXaxIehBBCiHto3bkMDlzLJjRRq6yqtiQ8CCGEEPfIodBsYtPzQ8Ouy3dnU6qqQMKDEEIIcY8cua42/PvAtWyjuupMwoMQQghxj5yNzDH8Ozg2l+waco+ChAchhBDiHolKM57nEKv4urqS8CCEEKLW0WQlkxp2VFksyknCgxBCiFon/sI2MmIuKYvvukAPS8O/LS3MCHAr/Lo6k/AghBCi1kkM3kZm3L0PD/e1yl8eGuChtg6YmRlVV1sSHoQQQtQqeRo1CRe3khlzWVl11w1rYc8z3Z0Z0tyBV/q5KqurLQkPQgghapX4i1vR5+nIjL33PQ8Ak7o7895wN2VxtSbhQQghRI0XH7TJ8O/Ei9sByM1MJDc9tkgrUV4SHoQQQtR4lrbOHP16CNEnVhJ/cauhPKOCeh/KIz5DS0KmTllcJUl4EEIIUeO5NOhOVsJVLq6agS63cJnoirjjorz+PZPBmjPVYwMtCQ9CCCFqPjMzXBr0yP+3Pn+VR0t7D+LOrDNuV4nWnctk3TkJD0IIIUSVoU4JN/pak5lAWsQpDs7rxo39PxvVVbTDodkkZ+lIzNRxNKxwP4yqSsKDEEKIGi/h4lay4q8piwFQJ0dwZcMcDnzaibC9C9HrNMom99zZqMI9MIr+u6qS8CCEEKLGu7ZtPgBlbUuVkxZDyKaPOPBZJ67v+pY8TcXtghmdWjhRsui/qyoJD0IIIWq08L0LyYgOAqA8CzzmZiRybetc9n/SkdAdC9Bkpyqb3HX21oXPzN6qPM+yckl4EEKIKiA2NppjRw8ri8UdykmLIXRHfq+DqbTqNEK3L+Dgp524tnUuuZmJyiZ3Te9AW8O/+zQq/HdVZabV1pDNxYW4y/J0GvR5Wiwsq/4LWVR/Rw4fJDCwER6eXsoqcQeC/5lJ1LG/lMW3xczCEv+ezxA4/B1l1V2xMSgDc3MzhjW3V1ZVOdLzIEQpctPjiDv7n7JYiLsuPj4Oc3NzCQ53Wcq1Q3ctOADodRrUKdHK4rtmREuHahEckPAgROnSo84Re7bq3AMuaq7IyAjq1q2nLDa4FHxBWSTK4dr2L5RFd8yxbltlUa0k4UGIUmREnSfp8m6ykyOUVULcNTk5apKTEvDx9VNWAZCZmUFUVCRarVZZJcoQeeQPUkKPKIuL8W59Hy4Nby4eVQ5O9SQ8IOFBiNKlRZ4DIE56H8Q9lJiQgKenD2ZmJc+wj4i4QUBAfVQqlbJKlEKXk0no9ltPknTwa03L8T/Q4bkV9PjfUZrc/xGugb2UzYw41W2nLKqVJDwIUYqMyPMAMnQh7qmkpCTc3d2VxQbRUZH41amrLBZlCN0xn9yMeGVxMQ0GTjf828bZj7rdn6L9s8vpOes4Te7/GNdGvY3aO9ZpjbnK2qistpK7LYQogTolkoNzuxq+7jx1A451pLtS3H0H9u+hXftO2NsXnyiXkBBP2PVQOnbqoqyqcDlpsWQnXiMrIYyctChy0mLRZCWjU2eg06gBPWbm5lhY2WFuaYeVvSuW9m5Y2nti4+yDtbMvtm4BWNq5Kh/6rsqIOs/Rb4cpi4vxaDGUNhN+URYXk5MWS8KFLcRf2IKtmz9NH/hU2aRWkvAgxE2X1r5FnW5P4+DdmPgLmzm39FlDnX/v52k0YrZReyHulE6nY++enfQfMFhZBcCVK5dQWaho0DBQWVUh0iPPkXR1PynXD5MadhztHS6WpLJxxN67OQ4+TXHwbYGjXyscfFpgbnn3Ps2f+f1JEi/tUBYX03nqJhzrtFYWl0mbnYrK1llZXCtJeBDiptgzawhaPhXvtg9grrIk+sRKQ521ky89Zx0zai/EncrMyODMmVP06GncPV7g9KkT1K1b745u4VQnR6Cyc0Fl7aCsKlVC8Hbiz28g4eI2NFkpyuq7ysG3JU512+BYtz0uAR2x926qbFJuBa/hW6nb/Uma3P+xsliYQMKDEEUcmtfNcHeFS2Av3Jv0QWXjQlbcZdwa9ca92UDlKULctpTkZK5evUynzoVDZEUdOniAVq1b4+jopKy6pdzMRK6uf5+Y0/+gsnWm2UPz8Go1UtnMiCYrhfB9PxBx8Fd0uRW3r0MBlbUDbk364hrYG7dGvbF1D1A2KdPh+b3JSghVFhuxsLSl+xsHsXLwVFYJE1jMnj17jrJQiNoo7tx6rF3qknLtAADq5HCSr+4jNyMOzxZD8Go9SnmKEHckKyuL1NQUfP3qKKsAuBF+HT+/OlhaWimrSqXX5xFx4BfO//EsaZFnAMjT5hB3bj16vRbXwJ7KUwDISY3m2rZ5RBz8Fb2ucm4LzdPlkhl3hcTg7SRd2U1WfAh6fR627vVLvRulQOj2BcQHbVIWF9Nw8Ezcm/RTFgsTSc+DEED08RVcXP0qNk7eqNNildUA2LoHULfbU9Tt/hRmFpbKaiFMlpyUTEhI6T0Phw8doFWrNjg4OiqrSpR24xTB/7xJRkzpi0p5tBhKy3HfFVt2PXT7F4Tu+MqorKrwbDkC7zaj8Gpzv7IKgKyEUA7PL3nopyh7z4Z0fXWvsljcBrlVUwggfP+PAKUGB4DsxDCubHiffR+3I3Tb5+SmxymbCGESSysVGo1GWWxgbW1DTo5aWVyMJiuF4H/f4Pj/3VcsONh7NTKa75BwYQsnFj5ITmrhMsuZsVeIPf2v4euqJj5oI+f/eonzyyYTd36DsrpcazoABPSfpiwSt0nCg6j1oo+vIDP2UmHBLfritNmphO78mv2fdODy2rfIjL2ibCJEudjY2KBWlz63wMHRgfT0dGVxIb2eqGN/cXh+b6KOLjOqsrR3o9lDX9B1+i46vvgfNi6FQyMZUec59t1w0iPyhzWyk0LJSgwrcnbVFHduPUF/TeHy2rdIj8pfxC0xeAexZ9Yomxbj0rAHPu0fVhaL2yRzHkStd2HFK2iKbrVb9tCqkbSIM0QeXkxWQgjWjp5GF2ghbsXc3ILIiBt4enphaVl8KCwvL4/YmBh8/UpeuvrSurcJ3fYFeZoivRNmZvh1GU/bib/hHNAJzMywcnDHp/3DpIQeJictBgBdbhYxJ1di4+ZPniab+AtbCh+jKtPnkRZxhoyoIADC9/5Qrl7A5mPmY+ta+v4hwjQy50HUagVzHe4Wt8Z9qdv9STyaD1FWCVGic2fP4OnpWeLeFnl5eezZvZ3uPfpgY2OjrObAZ52Nhh/sfZrT/OHPS11COU+n4eLK6cSeWWtU7tliaPUJD7fBp/0YWoytmvM5qivpeRC1WrFehzuUnRRG7Jm1JARvx9zCCke/lsomQhjRaHJJSk7Cy8tbWYWZmRnq7GzU2dm4uropq9HlZJBy7RAqawcajXyP5g9/jo2zr7KZgZm5Rf7tmuYWpFw7aCjPig/BXGWNPk9n1L6maPX4j/d8ZcvaRnoeRK11t3sdStJ41PvU6/mMslgIA7VazZFD++nbf5CyCoD09DROnjhG7z79MTcvPk0tPfIcNq71sLRzUVaVKf78BoL+fpk8ba6yqkap338qDYf8T1ks7lDxv0QhaomCOyzuJdeGJd+CJ0QBGxsbnJxdiYmJUlYB4OjohJeXNyEhJU/MdazT2uTgAODZaiQdJ681Xiyphn2UtHb0on7/ws2vxN0j4UHUSsXusChFgwHTaP/cCur1nISNS/Ex6bJY2rvh4NtKWSxEMX516hBxI39l05I0b9GKxo1vf9nm0jjWaU3nqRux92meX2DCZOGqo/TEU3/AdMwti88VEXdOwoOolcrT62BhZUu9Xs/j2rAHjUd9QI83j9L+uRXU7fF0uYKES/1uyiIhSuTt7YNWqyExIUFZdc9ZO/vS6aV1uDWurqsulpx4HPxaU6fbRGWxuEtkzoOodco716HBgGk0GDxTWWyQfO0g8UGbSLiwBXVK8S5nme8gTBEdHUlkRCSdOlfO9tt6fR5XN8zhxoFflVXVUusJv+DYsK+yuFJYW1vfcnnt6kbCg6h1jnw18JZDFhZWtvT83/Fyb79bUpDo8spmGbYQ1U7U0WVcWvM/9Po8ZVW14digJ/Uf/A5bW+MluCtLdrYayMPzDnZHrWokPIhaJfrECi6uuvNeh7IUBIkm932orBKiWki+dpBzS59Fq04DwMrJh9ybi0tVBw2Hv0f9Ps8piyuVWq0mPT0dT8+asZunhAdRq9yLXgchaqLspBvEnFqNjWsdbJx9Cd/7I4mXdymbVUltn1qKe9P+yuJKFxcXh5dXzeh9kAmTotaIPlG+Oyz8ez0vwUHUerZu9WgwcDq+HR4hI+YySVfzd6Os6iP3jvV74OB78+6RKqakdTqqq5rzk4hqT5+nzV+jX68nT5ODPq/03QZvR/i+8t9hIYTI3//i/J8vcGX9bMPqk3ozMzxbDsW77YNYWNkpT6lUVvbuuLUajbWTj7JK3GUybCEqhC4nk+ykUDLjr6FOukFOaiTq1Ghy0+PRZCagVaejVacbTdIyt7DEwsoOla0zlnZuWDl5Y+PkjbVLPWzd/bF1C8DeqzHmKmuj71WSipjrIERNkhl3lXNLnyYrIdRQprJxouW47w1DAqnXj5J0dR9JV/eTGnasyNkVz86rCfV6PoNVgyFVdl5BQkICHh4eyuJqScKDuCfUKZGkR54lI+o86VFBZMYGk51c+iI4t8vWrR72Pi1w8muJvW9LnOq2LfFTR3nnOvR489htrdYnRE0Sd34DF1ZMM9qt0967GW2fWlzizrF5mmySQw+THLKf5JCDpEfmb5ddUbzbPoBf53G4BvYiPj5ewkMFkPAg7hpNVgpJl3eRdHUvySEHUadEKpvcczaudXFr1Bu3Rn1wa9wHla2z9DoIUU55Og1X1r9H5OElRuV+nR+jyf0fY66yMiovSZ42h7SI06RHnCM9OoiMqHNkxFwqcyXI22Hn0QDXhj1wa9wH92aDDD2QEh4qhoQHcccyooOIv7CVhODtpEecUVZXGif/Tng0G0jMyb/JSriurDYivQ6itlOnRHJ26TNkRJ03lJlb2tD8oc/xbvegUVtTZcRcJDPuKlnxV8lKuIY6KZzsxOvklntHWzNAjx5QWTvSYswXONXrgHUJO4hKeKgYEh7EbctNjyPq2PL8N+fEMGV1tSK9DqI2S766j3N/vmBY14GbQ4JtnlyKvVcjo7Z3iz5PS05aHFp1GtrsVPK02ehy1YCe4H/eQJOVDIBL3QHYOAUSe2GRoe+iQe9vsbB0MHq8AqrAhvg1DFQWVwk1KTzI3RbitiRc2MLF1a9zbdu8ah8cLKxsqduzai0oI0RF0OvzuLZtHqd+HW8UHDyaD6HzK9vuWXAAMDNXYePih4NPM1wadMWtcT88Ww7Ds+VwnOsXLtGty0nB1buz0aBHXnooNhaqEo88jbZIS3GvSHgQJos+sYLL/80m8dJOZVW15N/reRmuELVObmYipxaN5frOb0Cf/9ZsZq6i0YjZtJn4Kyrrkj/ZVwRHv9aGf+eqI/Ht3ANb58KJmuZ2WXi1b1/ssHF3N7QR95aEB2GS6JMrCd0+v1ImQ96RUla2Mbe0kV4HUevk6TSc+ukRUkIPG8qsHL3o+OIa/HtX/jonTnXbGP6dkx5LblYSjkX2iUmNLpyXISqHhAdRblkJodzY/0v1Cw4YT/Qu2v0Z0PsF6XUQtU6eNofsxML1G1wadKPLtG041W1n1K6yONYpDA8A6TFBOPkW9kakRZ02qhcVT8KDKLfYs+vIqAGJv6ATwt6joawmKWollbUDDYf+D2snHwKHzqL9cyuwsq86Xf5WDh5Y2RY+n7SYIJx8CsODNieD7NS7v26MKD8JD6Lckq7sURZVazYeDWQPC1Fr+fd+gZ6zjhPQbwpmZlXvrcDatXCyZnrsBZx8Wxk9z7Qa8EGmOpNbNUW5HZzXDfU9WCWysth7N6Xr9B3KYiFqtdTUVLKz82+ZrCz29vZc//d94i8uB8DG0ZseL+7gyK8PkJlwFQD/zk/RqP/rRuelhYeTZmNN3aZNjcqripp0q6aEB1Fup38Zb9hZrybwbDmc1k8sUhYLUWvFxcVhb2+Pvb29sqpCpaamErb5FxJOLzCU9Zq6l5DdC4g+vwYA57od6DjeeCVMCQ8Vp+r1VYkqy7l+J2VRteZUr4OySIhaS61WY2VlVenBAcDZ2Rkrp/pGZekx+UMXhV8HGW2kJyqWhAdRbu5NB+JYt62yuFpyDuiMe5O+ymIhaq3s7GycnJyUxZXGztELlVXhnVBpscZ3XORpc8hKCDF8LSqWhAdRbk5121K321NYWNoqq6oVKwd36nZ/CgffFsoqIWqtvLw8zMxKWRClEpiZmWFt72/4OiPmAg6eTTCzsDSUpcUGGf4tKpaEB2ES346PEDj8HWzd6imrqgU7jwY0HPwm3m1HK6uEEFWMjUNheEiPDcLMwhJHr2aGsrSoit36WxSS8CBMVrf7kzQa8S7OAYXrz1cHroG9aDxyDn5dxiurhBBVkLVdYXhQp8WgzUk3mveQFiPhobJIeBC3xbPlCJo9NA/vPi+idyq+LW5VkutcB+9+U2n6wKe4NxuorBZCVFE2DgFGX6dFncHRpzA8ZMRfQa/TGLURFUPCg7ht9l6N+N6uAQvr9iO2+Ugs3Qo/JVQF9t6N0XYcz/e+PRkVm8ZLp/dwMEYmWAlRXVhYOmLt4GX4OjUmCKci4UGv05AeF2z4WlQcWedBlNuF5GiszFQ0cvE0lMVnp+Np6whAVsJ1kq8dIOXaIVKuHyEnNbrI2RXDwtIWS3t3LO1csfFoSMOBM7CwtGHftgVERwXhZm1PgGP+srcWljZ4tbkP96YDMTO3UD6UELVKYmIibm5uVWbS5I0DByAhkeSEFSRc3Q2AZ+OBtH7wa3Yv6EieNgeAJoPeom6H/KFIWeeh4ljMnj17jrJQiKIOxVzj5b1/seD0duwtrejlW7hsrL2lteHflnYuONVpg1erEXi2HIFzvfbYutQBMxXa7JR70r1oYe2Ac0BHvFuPwrvtA2Qnh5GdEEpuehxZsZeIOrIEC0trOo6ajZelNVnn1pIeeY6s+KtkxAQTe2YtMWfW4OjbAhvXusqHF6LWyM7OxtbWtsqEh7QbNyArG0tHPSk3jgGQp82mXqeJJIUdRp0aBYClnRuejfOHI3NSU8lRqXCqom/QWVlZ2NnZKYurJel5EGU6ER/GmE0/0t0nkJda9zUKDqZQp0SSnXid7KRw1Mk3yEmNJictltzMRLRZyWhz0tGq041PMjNHZWWHytYZla0LVg6eWDt5YuNSBxuXeti41cPOvQHWzoVzLvR5Wq5tnUf43oVGC8g4+LWi1WM/YGXvxtXNHxN17C/QG//pu7YcTvP7PsCmyOMJUVtU1Z4H2zp6zq6eYijvM+0QYYcXEXbkVwDsPQLpOmktlNDzkJyUZDivMrm6uUEN63mQ8CBuaW/UFfr4NVYW33V5Og16XS76vDzMLFSYmZljrirs2TBFSugRzv/1IrnpcYYyc0sbGg17m7o9niYt4jQXV88kM+ai0XnmljYE9J1KQN+XMFdZGdUJUZNV1fDg3akV+7/rYyhv98hCNNmpBK1/E24OVfadkd8zoQwP10KuEhJy2XBuZQgMbELDwPwPXTUpPMiESWGQpc1l/ult3EhPNiqviOAAYG5hiYWVPSobRywsbW87OAC4NOhKtxm78Gg+2FCWp1Fz+b93OfXzOGyc/ejyyhaa3P8RKpvCVfXyNGpCt3/BkS/7khh8602z8nQa0m6cJDNOJmIKcS9Y2bkZTZpMi7mAyjp/nhWATpMty1RXAul5EABsCQ/i7cNrcbG25aveY2nlVkfZpNqKOracK+tno8vNMpSpbJ1p/vDneLYcQW5mIlc3fEDMqdVG5wFo/drS+/EfsHXzB72ezPgQ0m6cIi3iFGk3TpERE2yYy9Fm4m9GYUWI6qSq9jzU69OHs/9MLZw02WQQ9TpO4ORfTxra9pl2GJW1Q7Geh6pGeh5EjbIk+DCTd//J1Nb92D56Ro0KDgB+ncfRZdp2HPwKb/HSZqdy7o/nubBiOuYWVrQY+zUdnl+NnWdDo3NVUWc49HkPDizoy545TTnyZT8urppB5OElpEeeM5oEmhFtPAQihLg7HL0Ll5LPSgpDZWU86VCXm2n0tbj3JDwIhvq3YOcDr/FU8x7KqhrD1s2fzlPWE9BvCmZmhX/2MadWceSrAaSGH8elQVe6Tt9J4LC3Mbe0MTo/Jz7EqOdCyd67KV5t7lMWCyHuAiu7/AmHAFp1KubWxjt/ajXZRl+Le0/CQy2Ulmv8QvO2c6KBU/7aBzWZmbmKwKGz6DD5H6M7NHJSozm58CFCNn0Eej0BfV+k++v78Ww10uh8AMzMsHWrh2eLYTQY9Cqtn/iJ7q8foOu07dh5NFC2FkLcBUXnJWnVaaisjMNDnvQ8VDgJD7XMucRIhv/3Lf9eO6WsqjWc/TvRdfpOo/kJen0eYXsXcvTb4WTGXcXayYfWj/9Iu0l/4NFsEI1HvU/Hyf/Sd84lus88ROsJP9Ng4Kt4thyBrXsAVJFxYiFqIpV1YXjQadVYqIx39i2rV1DcGxIeapHfLx7koU0L6VenCSMDWiuraxWVjSNtJv5G8zELsCjyKSYzNpjj348kK/E6AG6N+9Hmyd+p1/MZnAM6Y3FzrPW5XUvZFHbecJ4Q4t6xtHYw+lqnyzEaftRKz0OFk/BQS0RkpLDs8lEW9X+Cj7s9gJWFStmkVvLtOJYu07YZTabU5WaSGR1k1E6pp08gL+1ZxusHVpGcI596hLiXLIoMW3Bz6KIgyCMTJiuFhIdaoq6DC1tHT6dfnap5C1NlKphMWb//y5hbWOLetD/uzQYpmxl5qnkP1o58iTOJN3j78BpltRDiLiq6rgOATp1u1GOo1UiAr2gSHmow+URcfmbmKhoOeZN+H4XS9qml5Vqgqo17XbbdP4NPuz+orBJC3EWWip4HTU6a0e2a0vNQ8SQ81EBqnYaZB1fxyOYflVXiHnC2Mp68JYS4u8xV1kaTkrU5GZhbFg0P8kGpokl4qGGSc7J4eNOP7I8KYX7PR5TV4h4LSopi3JZFJKrlk5AQd5OVravh38rbNSU8VDwJDzXMtH1/o83TsXbEi7T1kC2mK5qzlR1pudmMXP8tV1IKN+USQtyZoms9aHKM5zzIsEXFk/BQw7zTaQQrhz2Pl53xGKGoGHUdXFg9/EWau/oydstPhKVXjS2BhajujDbDUvQ8yITJiifhoYZp4uKNk4zBVypblSW/DXySZ5r3JMCxcFldIcTtM1plUnoeKp3sqlnNHY8LIzIzmdEN2imrhBCi3JS7am7bulHZ5J5zdXWnU+euoNhVE+D8uteIC94CgHeLkdi5BhB64P8AcA/sQ9uH/0921axA0vNQjZ2MD+fZnUtQFVlpTVRdJ+PDlUVCiHKyLLJEtVadhleTwYZbqj0C+xVpKSqC9DxUU+uvn+Wtw2v4feBTdPD0V1aLKmZX5CUm7VjM//Udz/CAwtUshagqlD0P10KuKptUiIaBjaCEnoeQPQsIO/IrAM5+7ej4xB9oc9LR5KRj6+QHID0PFUjCQzW1LvQMfvYudPIKUFaJKurj4xv5+cJ+Pun2II816aysFqJSKcNDZVOGh+uHF3Ft79cA2HsE0nXSWsUZEh4qkvR3V1P3N2grwaGaebvTCGa2H8rnp7aQqtgWXQhRNssid1to1elGdaLiSXioRtJz1coiUc281Lovux98TValFMJERndbqNOM6kTFk/BQTbx3dB1Pbv9NWSyqIbmVVgjTqYpMmNRp1aCXEffKJOGhGvji1FaWBB9mcuu+yipRzUVlpvDnpaPKYiGEgqW1g9HXueoUo69FxZLwUMX9e+0U35/bzXd9xjGkXgtltajmDsdc450ja1h66YiySghRhIViZ00ZuqhcEh6quDr2Lizo9Qgj67dRVoka4KHADrzZYRizj6xlV+QlZbUQ4qaiy1MD6GTSZKWS8FDFdfFuwIMN2yuLRQ0yuVUfXmk7gPeP/qesEkLcZKnoedDkSM9DZZLwIEQVMKPtIP4d8ZKyWAhxk7nKGoqsQaHNyTCqFxVLwkMVk5CdwcObFhKRIZOBahtXaztlkRCiCCtbV8O/Zc5D5ZLwUIVkaXN5csfv2KmsqOvgoqwWtcjh2GvKIiFqPUu7wvCgz9Ma1YmKJeGhCnlp9zLy8vJY2O8JZZWoZd48uJpX969UFgtRayUFB5Nx0YX4Xe4kH3Un4XQyuWnS+1BZJDxUIe0867F40FPYW1opq0Qt8/vASeyMCGbB6W3KKiFqF72e83/8wbZp07B3a0a7yc/TfMzzxJ28wKbnniMpOFh5hqgAsjGWEFXUifgwJmz7lU33TSPA0U1ZLcRdVVU3xkoJDeXiX3/R5+OP8enYsbCBXs/R+fO5tnkzIxcvxrFOHdkYqwJJeBCiCkvNzZZ9MESFqKrhwbdrV9JCQ3Fr1kzZBIDYkyfx7tABZFfNCiXDFpUoMiOZr8/sVBYLYSDBQdR2KmvrUoMDYAgOomJJeKgkabnZPLnjd84mRiirhCiVWqdRFgkhRIWTYYtK8szOJURnpvDPiBexsbBUVgtRzEt7luFqbcfH3R5QVglxx6rqsEW9Pn2UVaVSDlskJyUpm1QKV7f8OUs1adhCwkMluJAUxbitP/PfyKkyEU6UW1BSFKPWf8eCXo/IkuXirqvq4UGdkoKNS9nr3yjDw7WQq4SEXFY2q1CBgU1oGNgIalh4kGGLStDCzY/9D82U4CBM0tLNj3k9xvDq/pUciglRVgtRY+WkprJ27FhSrsniaVWF9DwIUc38fGE/ffwa08TFW1klxG2r6j0Pm559ljrdutHm2WeVTQ2UPQ8ybHHvSHioIJmaXFn8SQhRZVX18BD055+ErF/P/X/9pWxqoAwPVU1NCg8ybFFBXjuwUpYbFkKI2+Tfrx+ZsbEkX72qrBKVQMJDBfjlwgH2RV1hSut+yioh7khIagIXkqOVxULUOI516uDaqBHhu3crq0QlkPBwj4WkxjP35Gbe73I/gc6eymoh7siR2GtM2rGYRHWGskqIGse/Xz/CduxQFotKIHMe7rEkdSZLLx1hWtsByqoqLSEhAZ1OC1SN8c+KoUelUuHuXr3GJF/dv5KozBSWD31OWSVEuVX1OQ8AmbGxrHvsMYYtXIhrkyZG7ZE5DxVKwoMoJjY2Fnd3d1QqlbKqxsvNzSU5OQlvbx9lVZWVoVEzZN3XfNR1NAPqlr6MrxBlqQ7hAWDz5Mn4duhA2+efNypHwkOFkvAgjCQmJuDs7FIrg0OBnJwcsrKycHV1VVZVWWm52TjJPhjiDijDw7WQypmYWLCgUmnh4cLy5Vxdu7bEuy4kPFQcCQ/3QKI6kz8vHeGVajZUARATE4OPT/X51H2vyO9B1DbK8LBt60Zlk3vO1dWdTp27QhnhITMmhnXjxzN80SJcAgON6iQ8VByZMHkPzDr0L5vCzqPNy1NWVXlVpcuysuklUgtRJaVHRGBmbo69r6+ySlQg6Xm4y9ZcO82M/SvYOno6jZ29lNVVXmxsLN7esnJhdHQMvr7Vs+fhsS0/M7VNP3r65nf/ClEeyp6HylZaz8OxBQvIjImh37x5RuVIz0OFkp6HuyhHp+WDY+uZ12NMtQwOomYY3bAdM/avJC03W1klRPWm1xO+dy/1+smaOZVNeh7uskR1Bu42DsriaqNoz0Nubi43boQpm9RYAQENDBNFq3PPA8DE7b9hBiwe9LSySogSVYeeh7hTp9g5cyYP/fMPVk5ORu2RnocKJeFBGCkaHtLT0zl8aJ+ySY3Vu09/bGzy71io7uEhJiuVl/cuZ2G/J3C3sVdWC1FMdQgPx7/+mrQbNxjwxRdGbQtIeKg4MmwhSlVFriEVxqwGLYjlY+fMymEvSHAQNYdeT8S+fcXmQIjKIT0PdyhLm8vEbb/xec8xNHByV1ZXOzVxwqRanU1mRgbp6elkZGaQkZ5OVlYGOp3OqF2fPgOwtrGBGtDzIISpqnrPQ/y5c2yfPp2H//23xCELpOehQknPwx36+PhGorJS8LJ1VFaJSpKSksz10GucPnWC3bu2sW/vLk6ePMaVK8FER0WQnp5aLDjY2NiSm5tjVFaTyORJUd3d2LMHrzZtSg0OomJJeLgDZxMjWHb5KPN7PoK9pZWyWlQAjUZDQnwcV69c4tjRw+zcsYVjRw9x5Uow8fGxaDQao/YqlQpnZ1fq1K1Hs2Yt6dipG/0HDKF3n/44Ojkbta0pIjJS6LF6ruy+Kaq18N27ZciiCpHwcAfmn9rGU826092nobJK3EPpaWmEXgvhyOGD7N61jVOnjhMaGkJKSpJRj0L+JldeBDZqQrv2nejVux/9BwyhS9futGjRmnr+Abi5udX4pbjrOrjQ1bshr+5boawSolpIvnqV7KQkCQ9ViISHO/BDv8d5o8MwZbG4y/R6PYmJCVwKvsD+fbs5fHg/V69eIi0txaidtbUNPt5+NGvekm7detJ/wBA6dOxEw4aN8PT0wtbWzqh9bfJZ9weJzEzlqzOynbGofuy9vDAzNyctPFxZJSqJhIc7YKeywlZlqSwWd0lWViaXL11kz+7tnDxxlPDw62RnZxnqLS0t8fOrS8tWbejZqx99+g6gddt21KsXUGOHIG6Xp60jc7qMIjWn8PcnRHVh5eSET8eO3NizR1klKomEB1Gl5OXlERUVwbEjhzmwfw9hYaGGeQtmmOHk5ELDwMZ06dKTfv0H07JVG/z86mJnV3t7Fcrr4cAOvNflPmWxENWCf//+hO3eLRvPVBFyq6aJfgrahyZPx5TWNXN51MpcYTI3J4eY6Ci0Oq2hTKWyxN3dEw9PDzw9vbCsoImpcqumqG2q+q2amqwsVt9/PwMXLMCzTRtlc5BbNSuUhAcTRGemMmDNAmZ1HM7EZt2U1TVC0fCQkZHOoYOVs8Kkg4MT9es3wNevjrKqQtT08JCj05Kr0+Jolb+uhRBVPTwA7Jk1Cwc/Pzq+/LJR2wISHiqOhAcTTNq5hGR1Jv+OeFFZVWNUdnhwc/OgfoNA3N0rd8Gtmh4eXtn7Nw5WVnzS7UFllaillOFh29aNyib3nKurO506d4VSwkPoli2cWbSIB1auLHEJXAkPFUfCQzklZGcwfuvP/NR/IvWd3JTVNUZNXGHydtT08BCSmsCgtQtYO/Il2rjXVVaLWqg6hAdNVhb/PPAAA7/8Eo+WLYucmU/CQ8WR8CCMSHjIV9PDA8Dnp7aw40YwG+57GQszmTtd2ynDw7WQq8omFaJhYCMoJTwA7Hn7bZzq1KH9Sy8ZlSPhoUJJeBBGJDzkqw3hIUen5dMTG5nRbjDOVvm7iYraSxkeKltp4SF061bO/PQTD6xaZVSOhIcKJR83hKilrC1UzOlyvwQHUa3U7dkTj1atyE1PV1aJCiTh4RYmbv+N7TcuKouFEEJUAkt7e3rNmYOVo2xGWJlk2KIM/147xYfHNrDrwddqzaezosMWOp2O1NRUZZN7ytJShZ2dPRYWFsqqClUbhi2UErIz8LB1UBaLWqK6DFuURTlskZyUpGxSKVzd8ifZ16RhCwkPpUjLzWbAmgW81XE4DwV2UFbXWJV9q2YBS0tLbG3tsbW1w97eDltbO2zt7LG1tcXG5t6vTVDbwsPqkJN8c3YHex6cqawStURNDA/XQq4SEnJZ2axCBQY2MUwCrUnhQYYtSnE09jrNXH1rVXCoSjQaDWlpKcTGRnHt2lWCgs5y/Ngh9u3dyc4dWzh06ABnTp/iyuVgwsOuExsTTWJiIhkZ6eTm5iofTtzCw4EdsLJQ8dWZ7coqIYQoRnoehJHKvttCr9crjjzy8vL/bernIT1gbm6WvyvGzU9TBf81NzNDf/PrgqOo2tbzAHAyPpzHtv7Mtvtn4O/oqqwWNVxN7HmoaqTnQYh7xMzMDHNzcywsLFCpVFhaWmFtbY2NjQ3WJh42NjZYWVljZWWFpaUllpaWqFQqVCoV5hYWWFhYYG5uXmUulpWtg6c/r7QZQGqu7LwphCibhAchhMGU1v1o7V45+4kIIaoPCQ9FxGen88jmH4nPlvuHhRBCiNJIeCjiw2MbSc7JxNO29t4/rNfLFBgAc3N5aYjaRaVSodFolMWVRqfLUxaVi0atVhZVGTqdTllUbckV8qZTCTf47/qZWr/LoL29PWlpacriWiU1NRUHB3tlca0SmZHMoLULiMuq3X8LtYmTkxPJycnK4kqjVmcri8olPSycvLzbCx73Un5wqDnzq6rF3RYZmhxe2btcWXxXnUuKRK+HNpU03vtO51E0dKrcbagLxMfHY2ZmhpOTU62aTKjX60lNTcXc3Ax39zufEX0s7jo/nNujLK42jseF4WhtQ1Pn0u++aebmwxvthyqLK1T60iVoQsOUxdWOwyNjsGreXFlcodLT08nKysbZ2anSFmrLv007DU1ICCQkYutu2nUxMew6TgMG4uBgXyFrwpSHWq0mMzMLH5/SX0tF5Zw4QeaGit/V1BTVJjz0+meesviuyrt5a6BFJXVX/zn4GVq6+SmLK41WqyUrKxuoegn+3jHH3t7url00t964wBsHVyuLqw2dXo+5mVmZn5XGN+lSJcJD5uYtyuJqx3X6NKw7d1EWV4r09HT0+sp57ZubW+Dg4EDssWNkx8Ypq8ul/qiRZGdno9FU/povej1YWVlha1v+VYqzduwg7ddflcVVSrUID0IIIYSoOirnY7YQQgghqi0JD0IIIYQwiYQHIYQQQphEwoMQQgghTCLhQQghhBAmkfAghBBCCJNIeBBCCCGESSQ8CCGEEMIkEh6EEEIIYRIJD0IIIYQwiYQHIYQQQphEwoMQQgghTCLhQQghhBAmkfAghBBCCJNIeBBCCCGESSQ8CCGEEMIkZlqtRq8sFGXL0WrYdP4EwXFRaHQ6LC0tsFKpMDeXLCbuIj1odVrUGi36PD3udnb0a9KaFr7+ypaiEiWeP0/CiRPkpmdgZm6OpbUV5iqVspkQ95Zej06rRZuTCxYW2Pv5UadfX6ycnJQt7woJDyYIjong3zNHsbGxonez1vi6uCmbCHFPHbx8gYsRYTRw92JCl37KalGBLv/1F5rkFLxatcKzdWtltRCVKjs5mahDh1CnpuLTswfubdsqm9wRCQ/lkKvT8tXO//BwcWFom07KaiEqXGRSAlvOHqdbQBMGN7u7FwVRtrBNm8m4fp1GI0ZgfY8+1QlxN0UdOULStWs0enQsNu7uyurbIuHhFo5cv8yOy+eY2GcwZmZmymohKtX+4PPciI/j9UGjlVXiHgha+CPerVvj0aKFskqIKu/i6lU4NmpM3X59lVUmk/BQhrVnjxKWksDDXXsrq4SoMuLTUll//DDvDB+jrBJ3iTY7m4u//EqLsWOxsLRUVgtRbYTv20euOptGY8cqq0wi4aEUm84fJzw9mVEduimrhKhycjQalh3YyTtDJUDcC+e/+55Wjz+uLBaiWoo6dgx1RjoNH3pIWVVucntACS7HRnMxPkqCg6g2rC0tua9jd77YvkZZJe7Quf/7gVbjxyuLhai2/Dp3xlyXR+zRo8qqcpPwUILlJ/fzaI/+ymIhqjQPRyfq+/qx6fwJZZW4TSGrV1OvSxeQ+U6ihqk/aBDxJ04qi8tNwoPCov1bGdpO7qgQ1VP3Rs05ERmqLBa3ITcjA21yMi6BgcoqIWqE5g89xMVff1MWl4uEB4X4rHTqunkoi4WoNkZ26MovB7cpi4WJrq5YSZOHHlYWC1FjWFhZYamyQJ2crKy6JQkPRSw7to+hbaXXQVRvXk4uRKenKouFiSzydHJ7tqjxAkeOImzdOmXxLVnMnj17jrKwtvr37BH6NG+jLK5xIuPjWPTfvwR4++Bkb486N5eD588SHHadkMgIo+N6bDTuzs7YWFkpH6ZEer2e5PQ0Tly+xMXroeShx8HWDpWFhbIpWp2W8LgYjgdfICoxEUc7O2ytrZXNTJKj0bBk8wZsrCzxdHGFmz/v0q0baB5QH2vL8v0cyt9RgfyfLZiL10MJj4vF3sYWOxubKvcmk5enJyM7Ez9nWQX1dtzYvgPP5i2wdnRUVlU76vR0stPTMQPDbabq9HT2/vYbjp6e2Lm4KE8BQJubS0JoKNdPnSItLg4re3ssb+NvPTcri5jLl7lx7hyZycnYOjqiKuV1rk5P58b580RdvAh6PTZOTne87P+JtWvJTErCvV49uPk99i1ZgoufH7bl/P9ryjnJ0dHsX7wYt3r1jNpmpaQQdvo00ZcukRwRgZWdHVZ2dib/Pu82MzMzYk6cxKtLZ2VVmeRWzZvUWg0/HdxW5dd00Oq0/Lx+Ld1atKZd4yYAZKrVvDT/Mw5fOAfAD6/NYkCHTkTGx/Hpn4u5Hh3JSw88wvBuPTAzMyMoNIRp38zn61deo2WDQNKzMvlp3b+kZmYYfa/snFyOXQri++lv0LJBID+vX8Pnfy0F4MHe/fls8lSj9jFJibz2/ZdEJybSpVlLrCxVJKalceLSRV5++FHGDxpqeKHsPXOKNxd+i7uTE20bNSE7J4dDQedo7h/AvJem4eGcf0GLT0lm/AfvEB4bY/S9AJzsHfh91mxaNggkNTODY8EXyFJn89O6f+nXvhOtGwTSqF491Dk5vPvLj/z4+ixDoADYefI4L87/1Ogxufn783Z1NfodaXVaPv3jd3acPEa35q2xslShy8vj5KVg6nl7M3/qDBxt7ZQPValWHtjF9AH3K4tFOZz/YSGtxo1TFlcYnUbDlm++ocN99+HTJP91XtSFnTuJDwuj79NPG8ou7d3LH6++CkD9Dh0YP38+e375hcN//429qyvZqakMeeUVuo4dS0ZiIktefpkHZ8/Gr3nzIo+c/wHg6KpVbPv2W/xatMC9Xj3ydDqunzyJvZsbj376Kc7e3qQnJPDTU0+REhODpY0Nzy5aZPRYOq2WHT/8wOHly2nUrRv2bm5oNRquHjhAg06duP/tt7FxcABAnZHBuo8/5sLu3TTp0QN7NzeiLl0iPiSE+2fNou3IkZiZmZGblcXS6dO5frLkiX5PLFhA0z590OTkcP3ECXKzszm0fDnO3t606N8fZ29vnH18SvzZtbm5HF6+nMQbNwxlds7O9H7ySTQ5OUbnFP1dF/XEggU4enqy7PXXGf/FF/g1b45Oq2XTggVc2LmTwG7dUFlaGn6f7vXqMfbTTw2/h8oSdeQIji1a4OifH7DK484iXQ1yPPQyrQMaKourFL1ez+LNG9hwcD9eroVvggUe7N2fS3+uZkCHTiSlpTL1q8/x9/LmxQfG8P2/KzgYlB8ubtezox7g5C9/0q1Fyev4bz58CHMzc/77bAGfTZ7KB89M5vsZb/DlyzP4a/tmElJTAEjLzOC7f/5m5mNPsH7uV3z83EssmDqDjfO+Ii0rk/UH9hse09PFlW0LvufSn6uNju1f/h++boXLrGZkZXH0QhCHg86TmplBcFgoB86fITI+3tBGaUCHTobHalovgH8+mmf4/SldjbjB3jOn+HbaG4af7ePnXuKvOR+TkJrKsYsXlKdUuvTcHGWRKKfKvjBaWFrSY/x4tn3/PXGhxhNgQ44c4dzWrXR95BGjcgBLGxteXLqUZ376iYTQUEKOHGHaP/8wc+NGJv34I0dWrODkunVc2reP3Kws5ekAZCYnc/CPP3hozhwmLVzI6Lff5sHZs3l55UrsnJ05s2kTAI4eHry2fj1PLFigfAgA4kNDObdlC8/89BPj589n9Ntv8/CcOUxduZK40FDCigSAS/v2kRAezhubNhnavrhkCffNmsWuRYvIvDkmb2VnxzM//cSHx48bHW/t3IlfkVU/dbm5XD95kquHD5MWE0NCWBhXDx8mNiTE0EYpT6vl0v792Do50ahbN1zr1CF4zx40OcVfR0379OHD48eZsXYtXg0a8OLSpXx4/DhN+/RRNiU+NJRLe/fy+Pz5PDxnjuH3+cLvv5OekGD0e6gsHi1akHDmjLK4TJX9GqkyguMjCfTyVRZXKeeuhfDPnp18/PwU/Dw8ldVGzodew1KlYvLohxjZvRfjBw9jxc6taHU6ZVPUublsPnqIDk2a8fLDjxqON8ZPYPUH82jqH6A8pURdW7TgRlwsP679h7MhV4lKiGfzkUN8ueIvGtapi6Ndfve/tZU1Xq7uHDp/nrjkZPR6PVqdljMhV4hPSaGO560nrKZlZqDV6bC52f1Zx9OLtyY8zStjxmFlacXo3n354JnJ9GnbXnlqMaExUVyLjuT01cvEpyQz+NUpPPTOG6RmZhra1PP2paFvHeb89hOrdu9gy5FD/HdwL+/+shCNRkOzcv6OKpLKvPhQkbg1fV4elpX8SRDAxdeXodOns+Wrr0iJjgbgxtmzHPvnH+6fNeuWn1bVGRlYWFlhc3PYzc7VFW1uLlcOHCD0xIkS3xQB7G6+ee76+WfOb99OSnQ0kUFB7P7pJ8LPnqWOoqeiNG516uBevz47f/qJKwcPkhobS+iJE2z/7juy09JwvTmMAODk5UVGQgI3zp1Dm5sLQEZSElcPH8bJ2xsrG5sij1ycNjeXnPR0w3CIjaMjg6dOZdiMGTh5e9O4WzdGv/02HUffehn3gLZtaTlwII26dr3l7qiJ4eHEX79O+NmzpCckMH/UKH6YMIGs1MI5R2516uDZsCFrPv6YE2vXErRjB2c2bWLtxx+j02jwbtzY6DErg5WjI+q4OGVxmSQ83JSeo8biDsfW7iV1bi4/rvuHF0Y/RJvARsrqYi7fCKOhbx2c7PMvML7unpy8HMzsXxbyw9p/yMpRK09h3l9LeOz9t42OR+fM4mg5P1U3r9+QlR98hqujE6t2b2fh2tWcuHSRV8aMY8GU6YZ5E9aWlnz2wlS83dx4/MN3aPXko3R5/il+Wb+WD597kUGduiofupg8PVhZWeF0M5Bws2dmw6H95OTm8uuG/wiLyb/gliUqIZ7P/1zCA7378dvG/4iIi2Pbgu/556N5OBeZ62BvY8OCl2dgZ23NnjMnOXD+DLtPneTs1St8NnnqLcNcZbCzKXlcWZQtOyEB27u0edCd8mrQgMFTprD24485t20b+5YsYeQbb2Dr7KxsWky9Nm2wcXDgn/ff59T69ax46y0adevGI598wrDp07EvofcSwFylYuQbbzBs2jTCTp1iz6+/cnzNGmydnZmybBmBXW/9+uRmL8Hj8+fT4f77Cd67l90//8zZzZup27o1U5Ytw6tBA0Pb+h06MPazz9i3eDGfDhzIu5068cPjj+Po7s64efOwsit7SDBPp0NlbY2tYqOyq4cPk3D9Oqc2bODG2bNGdXcqJTqaTTd/vv1LlpASFcVr69fz4tKl2BX5/2NlZ8ejn32GtZ0dl/fv5+rhw1zat4/w06cZ8+GHuPhWjQ+tulLCZGlkwuRN+0MuVrlhC61OZ5gstOvkMa5E3mDy6DHFJh9qtFo2HNqPo50dgzp1AeDs1avEJicxuFMXzMzMCI2O4tTlYEb37oujnR3nr4Uwsnsv3JycyNVoeahvfx4bOJQx/QYWO9ydnFFZqFBZWJT4vbg5h+GXDWs5ejGIlIx0Q7kuT0dIZAR7Tp/k5OVgmtSrx/FLwVyLjMDb1Y0erdowtEt3BnXsQpvAxmi1WkIiIzAzN8PC3Jz9505z5UZ4sYmcB4POci0qAm83N1wcnMjOUTN32WJ2nzzB4rfmoLJQ8c7PP+BgZ4e7kwu7T5/gvh69sbexNTy37SeOMnn+Z/Rp2553Jj6DlaUVby36Pxzt7fF2dWPzkUMM79oDaysr9p87zeUbYRw4d4Z2jZrSqWlzrCwtOX7pIp4ursQnJ+NoZ4+DbeHjV7ZrcdG08vEv9vciypadkEheejoOVeSi7uDujo29PWs/+ogHZ882TPxTSgwLI2jHDjrcfz+Onp6orKxoMWAAltbWRF24QJeHH6br2LFYqFRocnK4dvQojXv0wMGtcFKtOj2dXYsWEbRjB3HXrpFXpKcyKzWV6ydPcmnfPixUKsPzUH5fbk4a3PXjj1zat4+kiAj0+sKpdWlxcVw7doxL+/bh4uNDVloaYSdPosnOpl7r1jTv149WgwfTuEcPnL29SYmOJjUmBltnZ66fOEHM5cvEh4YaHaEnTnD95Ek8AgJQ2digsrJi7++/s2fRIp746iv827Zlxdtvk5uVhXfjxpzbupXmffsani8355mc3bwZ/zZt8AgIID0hgeA9e2g7YgQAZzZtMpxzcc8elrz8Ms1692bkG29gaWPDqnffxdbFBSdPT85t3UrrIUNQWVlx9cgRYq9c4crBg/i3bUv99u2xsLTk+qlTOHp4kJGYiI2DA9ZFPqxUhrhz50yaNCnh4aZD14KrVHjYfuIony9byoCOndFotXy18i+eHn4//t4+yqYlvqFn5ahZf3Afgzt1xc7GhvUH92NvY8OLD4zBxsqKrceOMLxrD1IzM3n56y/4a/tmVu/ZWerRzL8+9by8S/xeANo8HQ42tvh7+ZR6BPj64eHswqbDB7gSeYMbcbHciItl1e6dBF0PITs3x1Dm6eKKg40tGw8d4EpEOH9s20hschIpGemcCbnK9uNH6di0BfEpyTSqUwdzcwuuRkbw9sRJ+Hl40q5RE3q2boeDrS1WKhW7ThUPD0729nRt3pJxg4ZiqVLRJrARjw4cTKsGgaRnZ3Hq8iX6deiEg60dUQnxmGNO1+at8HbNv9g62zvQr11HnG/27vi4e1Sp8HAhIoyuAY0xr+TZ3NWNJjMTdVwcjn5+yqpKEXP5Mnt++41+zz7LkRUrqN+xI9YlfBIv6U3cwtKSE2vWELRjB8F79nDor784uGwZx//5B41aXewNtOAt3tnHB7e6dUs//P0NPRclfV/y8jCzsMDVz6/4uUUOj4AAEsPDubR/P0kRESRFRHDj3DkOLVuGXq8nNTaWpIgIMpOT8W3UiKCdO4kNCeHYqlVEBQejUauJuXKFk2vWENCuHeqMDJw8PHBwdyf0+HGGv/oqvk2b4tmgAa0GD8bS1hZHDw/Obt5c7Gc3JTzYODoS2LkznceMwUKlom7LlnQZM4Y6LVqQk5FB+JkzNOvbF2t7e1JiYjAzN6dh58443fx+ds7ONOvTx9BD4eztXe3Cg9xtcdP/7dnE6G69lMWVRp2by2vff8WIbj1wtLfn7+1bmT91Rom3TBbcbeHr7mG4AyJTrWba15+jy8ujqX8A244f5btpr9O8fsNid1todTpOXr5Iclphj0EBC5UFnZu1MLxBlvS9Chw8f5bZvyw0KivQtlFjPnzmJexsrA3fz93ZhUC/uvxv4Xc0qluXZ0c9oDwNinzPJ4ePYkCHTgSFhpR490Rpd41w843++fsfNMy7KJCUlsq0b+YTnZhgVA7gYGfP3MlTaVovfz5DfEoyf27dzPYTR1Dn5qKyMKdbi9Y8Ofw+GvhWjTeaov46sIPXB5T8OxWl02RkELl5C/UHDlRWVbi40FC2fPUV9/3vf7j4+nLj7FkO/Pkno996q9jQxaW9e/n7rbeK3fWgTk8vNr8hMzmZle+8w8Nz5hS72yI3O5s1H3xAeCnd/A/Onm00dFHa981ITmb5zJmG+RpF2Tg68shHH+HdKH8INi0ujtirV6nfsSPx167x7wcfMPHbb3H0KHn+0+o5c/CsX58+Tz1FekJCue+eKGBpbU33xx/HtUjvUsGdHBZWVrj6+pKZnExcSAjPLFoEUOx7mPLzpSckcHTFCs7v2IFGrcZCpSKwa1d6PP44HgFVY77U+RUraPXC88riUlXdQf4KVsfFnbi0/LsBqgIbKyueHn4fm48eYsuRQ4zo3rPE4FAaexsbvnrldfp36IROl8ePr79F8/ol96zkaDR8/88qVu7ezoHzZwzH9hPH+GjJL0TExSpPKZE6NxdPF1d+efNd/nrvY8Mx9aGxJKSkor/5uabg++06eRyATs2a0+TmG/SdsFRZ0rl5S3q2amt0+Hv7sOf0SdQ3J2IV5ezgyNevvGb0fP9672Pee/p50rMy0Wq1AKRkpDN5/mfkajUsmvkOG+Z9zbLZH9MsoAEvfPEJodFRyoeudNm5GmWRKAdLBwfUKaavuHe3pURHs+Wrrxg6fbphXLxemzZ0fugh1n36KeqM4iG5JEdXr2besGFGx/ePPUZyZKShTczly6z9+GNiLl8GvZ70xEQGvfgiLyxebDieXrgQRy8vtOUcG9frdKgzMnjg3XeNHueJr75Cr9ej0xT+fUYHB7Puk09Qp6dj6+JiGG65E+bm5tRp2ZJG3boZHXVatODSvn1kpxhf71VWVgx44QU6P/ggjbp1o+3w4YycORObUtZ1sHNyYtznnxv9bC8sXswD775Ldlqa4efLSklhySuvoNVoePL775n+77889/vv+DZrxuKpU0kIC1M+dKWwdir55yyNhIeb2tdryMWIqvE/sUCrhoHk5mo4FnyBtoGmz8h1sLVl4tCRvD1xEo3q1FVWFzOqR2+juy2eGXkfznZlz+i+ExnZ2cSnJNO3XQeaB9QnPiWZ+JRkMtXFJ3OWh42VFX3atmdo1+5GR/eWrVGVMmvawtwcNydnPF1cjQ43R0eUnf0W5mbU8fTCzdkZa0tLnB0c8XF3R2VuQZ4+T9G68qnMZK7D7dKoy/cGea/oNBoOLlvG4ClTjCYWAgR27UrrIUM4snKlUXlZWg4cyBubNxsdM9aswa1u/nUhNSaG4//+S2pM8fVUKkqeTkdmcjIqS0s6Pfggmpwc0hMSyEhONpp7UV7mKhUNOnak5cCBRkfT3r1LnIBZUvvGPXqUGmLMLSxwcHXF0cPD6LBzdi628JO5SoWLnx8Obm6orKywc3LC2csLC5WKvLzKv3YkXb6MS7NmyuIySXi4yd/Ng2uxxbufKpONlRULXn6Vv+d8Qh1PL2X1XWOGGR4uznz3zwqjOy2mfvU5Zubmpb7xKtlYWRGfkswzcz80epzv/lmBh4szZjffjgu+3/qD+4rd3fHY+2+z7sBe5UNXOhcHR+ZOnsbJyxfpP+0Fmj7+MD1enMQv69fy/qQXaOhbR3lKpYpOSaKZT9V6TtWJlYsz+kq8qFtYWjLitddKXCAKoMWAAUYLRJXFxtGRiPPn+fHJJ4sdu252yResW9C0Tx8wM8PR3Z3tP/xg1Pa3yZNJj4srdXVIJTMLC2wcHFjz4YdGj/PH9OmYmZkZVrsEUFlbY2Zuzh/Tpxd7jstnziQrLc3osasTOxcXHvnoI8JOnmTesGG826kTH/frx97ff+eB2bPxrF9feUqFS7h4Ac/2t76tvSiZ81DEl7v+Y2yPfsriKq+0FSbvtlutMCmqjr8P7eLl3iOxlDstbktGZBRJR4/i36/6XA+UK0xO+OqrEj9h3y23WmFSVB9By5fT8sXJyuIySXgoIjQhjh3XzjO8bflnnApRFS3ds5X/DZEdIe/Eue++p/XjjyuLhahR4k6fBkcHvDqZ9oFThi2KaODhRXwVmCglxJ3478QhxravOncOVVfe3bsRfeyYsliIGiU2KMjk4ICEh+Ke7NKPvw/tUhYLUS1k5qjJVufQ0NNbWSVM5NWxI0ll7IUgRHUXtmsXfv36KovLRcKDgp+LO67W9py9YbwZjRDVwfIDu5gx4D5lsbhNjZ94nAt//60sFqLay4yNJTstFfdWrZRV5SLhoQRPdx/IudAQ4tMKNzcRoqpbdmAHY9v3VBaLO2Dl6Ih7h/aEbNyorBKi2tLrdITu2EGzp55SVpWbhIdSvDH4QTacOEyMzIEQ1cBfB3fQs35TuT3zHvDu0gUrb2+ubd6srBKi2tHl5nJ++XJaTXlJWWUSudviFr7YvpYmdevRsYHpizQJUREW79nKiObtaVev5BVExd0RfeAAKUFBNH9krLJKiGoh5do1Io4codVLLyqrTCbhoRz+PrGfsJQExvccUGzlMCEqy9GQS1wIv870/qOwt7ZRVot7IDM6mmur/6Fu5864lrKAkxBV0eU1/2Jma0vjceOUVbdFwkM5Zeao+WHfFixUZgxt1wVn28rdAU3UXkeuXuT8jTC6BzRmcPN2ympRAcK3bCXt6lV82rfHQxZGElWUTqMhdOtWcrOyqP/AaOy87t5KxRIeTJSVm8Nfx/cRmZqEg60NDb39qOvqgbOdPRbmspqfuHv0ej3Z2lzi01K5Hh9LdFICFpjTv0krutSXYbSqIObIERJOncbczAxHPz+c6tbFxs0NlY30BImKpc/LIzc9nYyYGNLCrpOdmoa1qwv1hg3D1t1d2fyOSXi4Q8ExEYQmxpGclUlenumbtwhRGjMzM2wsrfFzdqWxly8eDk7KJqIKyYqLI/36dbITEtGVc+dJIe4WMwsLrJyccPDzxblRI8zM7+39EBIehBBCCGGSextNhBBCCFHjSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4aEaOnfuHEuWLFUWo1ariY+PR6fTodfrSUpKIiYmptRDrVYDkJqaSmpq+bcfL+37l0atVrNkydJyfQ+1Ws1PPy0iLCxcWWWg1+tJTk5Go9GwZMlSzp07p2xSqtTUVL766mvDcyn6WLfr3LlzbNu2TVksRJWxbdu2Ev9Gi14zNBoNcXFxxa4TBUdBO51OR3x8vOH6UR6lff+yrlNxcXG3fF1evnyF5OTk27oOLFmytFw/Q3mvd7XtOiDhoYqKiYmhXbt2NG3ajJYtWxEY2IiRI0eRmZlJREQEBw8eNGqflpbG2LGPsmTJUszNzcnKymLSpGd47bXX+fTTT3nttdcZNWoUn376qeG4cuUKAFeuXKFv376cOHHC6DEjIyN57bXXGDv2UY4cOWIoL+n7A0RFRbF27VqjIyoqCp1Ox8GDB8nOzgYgMzOTyZNfJCYmBoDTp08zfvzjZGZmotPp2L17N8nJSQDFLmhJSUlkZGQwa9ZbJCYmcvDgQSIiIoyeR3x8PGPHPmp4/KKys7PZunWr4blkZWUxZcpUgoKClE2NpKamMmfOHKZNm2Y4vv76G9RqNREREZw/X/b5Qtxrp0+fpmHDQJo3b0HLlq0ICKjP5Mn5uyeePx9U7G9Uec0ICgpi2LBhfPDBB3z66ac8+ug4Jk9+0XC9+P7778nIyMDc3JwlS5YyduyjpKWlGT1mcPAlnn56Ek8/PYmrV0MM5SV9f26+/opep4oe8+fPJyoq2tD26tUQ3njjDX7/fbEhVCxa9BNhYWElXgfCwsJZuXIlYWHhLFmylCVLlhIbG8uSJUuJiYnl4MGD6HT5qwJv27bN6LU9bdo03nzzTcLCwo2ud3IdKCThoQrz86vDnj27CQo6z+rVq3B2djbUZWVlGSXzlStXkZCQwMSJEww7f1pbWzNp0tPMmjWLSZOeplu3bsyaNYtZs2bxzjvv0KJFCwA6duzIsGHDmDfvc8Obanx8PM8//wKDBw9m9ux3effd2Zw9e9bw/ctj6dI/OHPmjLIYbgaIzZu3sHbtWnbt2s2ePXvo1KkznTp15vDhw4Z2UVHRzJ8/3xCAJk16hszMTKPHUtLpdGRkZBi+LvqCf+edd0lMTDBqXx7Z2dkcOnSY5557zvA7nDDhCaytrZVNhag03bp14/jxYwQFnWfhwh+M6rKyMg29B5RyzWjQoCGvvz6TWbNmMWTIYB59dKzh733GjBk4OztjZmbGxIkTSEhIYOXKVYbHDw4O5pVXXmHKlJd4+umnmDJlCpGRkYZ6U/n51cHbO38jp/j4eKZNm8awYcM4efJEuXoCkpOTOHr0KMnJSRw8eJCDBw+SkZHJwYMHUavzr3MFevTowaxZs7j//vsJD7/BtGnTee211/Dz8zVqJ9eBQhIeqqnTp08ZknlmZiarV6/mkUcewdPT09AmJyeHX3/9jU8//ZRff/2Nw4cPF/sUwc09FMaNG8f58+e5dOkSAHv37qVHj+4MGzaMVq1a8eyzz7B27VrDY5fEz8+P0aNHM3r0aEaOHIm3txfe3t7KZiXq3r07x48f4/jxY3Tr1s1QHhDgz9y5c/n66695+eWp+PvXw97etB1NHRwcmDJlCrNmzWL69Gm4uLga1efm5rJr1+5ivSYFPScFLCws8PDwwMfHBx8fH9zc3GSLdlFtbN26zfC6L+2aERp6jS+++JxPP/2UrVu38fffKwzXjLVr1xnaeXp68sgjj7B69WpDmF+zZg3PPvsMnTp1ok+fPvTq1ZMDBw4YzilN0Q85RY+ib8qnT5+mdetWDBgwgBkzXuXIkSO3/BAB0KhR+TaQs7e3x8fHB3t7e5KSknBwsMfLywtLS0tlU7kO3CThoQpLTEzgnXfeZdq0aXz++RdkZWUZ6nr06MncuXMJCPAnIiKS8PBwuncvfNMFUKlUdOrUiQEDBtCpUyf8/QMYMGAAAwYMoGfPnlhZWRna1q9fH09PT06ePAVAePgN2rRpY6hv0qRJsS7Ksly5coX4+AQaNWoEgFarJSEhgdTUVDIzM0lNTWXYsKGMHj2a/v37cfLkyRJ7HoravXs3/v4BxMcnkGPCxkMZGRmkpaWTmZmFh4cHFhaFu59aW1szffo0GjZsYHSOqYKCgoqFDSEqWnDwRWbOnMm0adP48cefjOoeeOAB5syZg7Ozc6nXDFdXN/r27cuAAQNo3Lgxbdu2MVwzWrQw3nq8e/duhIeHExGR37uQkFD4egfo1KkTkZG3fj1kZGTw/PMvMHDgIKNj5MhRXLx4EYBLly5Tt249AFxdXUhMTGTlylWEh99QPJqxJUuWMHXqy2RkZBAbG8uzzz5r6A2Nj49n48aNxMbGws0h0t9++x0zMzOWLfsLvd70bZ9q03VAwkMV5enpyfr16/noow+ZNWsW8+d/wa+//oKdnR22tra4uRV+eo6OjkKlsqBevfwX1+1wdnamUaNGBAfnv1i52UVXIC8vzzAR81Y0Gg0//fQTQ4cOxckpfyfIgomKa9euw8zMjJycHAYOHETLlq14/PEn6Nu3b4k9DwXCwsLZsGEjV65c4YsvPicsLEzZxMDCwgKdTmd4/AkTJvLjjwvJzi4MX9x8nklJSTRq1IiuXbuWeJibm5drUpUQla1ly5Zs3ryZ2bNnM2vWLBYu/IG5cz8DwMnJyfBa5C5dM+rVq4dKZUF0dP4bpU6nIzc311Cv1WoNQyQl0Wg0ZGZm8ssvP3PgwH527NhudPz77z+4ubnd0etv4sSJfPfdtzg4OODt7c3PP/9M27ZtDfXm5uZYWVmRnp7OtGnTcHCwZ9WqlRw8eJA33niDpKT8uVeiOAkPVVTBp+Mnn3zKkMR79+5Dq1atmTJlqlHb7OxstFqd0Sdqbr54jx8/zs6dOzl+/Djh4WHs3LmTnTt3sn79ej755BPi4uLg5tCFSqUiLS0dgKZNm3Ds2DFDWDh+/AReXl637J7T6/V8//3/ERMTy/jxjxnK3d3d+eijD5k4cQKenp5s2bKZf/75h3/++YegoPP89tuv2NvbY2VlxRNPPI6fn5/h3LS0NF555RWmTp3Cjz8u5PPPP6dJkyaGeqWCxw8KOk9Q0HnWrVvLvHnzaNWqFc7Ozrz11iycnZ2N5lOUdRRMLC1Ly5YtGT16tNHzFqIiWVpakpCQwIMPPmS4ZvTo0ZOWLVuxYMECo7alXTOSk5PYs2cPO3fu5MqVK5w5c9ZwzVi6dCmLFv2MVquFm9corVZn+JDh7x/A2bP5dzzo9Xr27t1Lgwb1jR6/KFNef02bNiEiIr+XITY2DicnJx55ZAz+/mWHn6tXS3/tenp6MmzYMFxcXFixYiVdunRl3rx5eHh48OeffzBkyBCjD1DlUZuuAxIeqjDlm2DB8cUXn5OUlGxo5+rqikplQXZ2YUK3trbmyy+/ZP78L5g1axZffPE5a9euZfLkyUyaNIlp06YTERFJXl4e3AwamZmZ1KmT/0fft29fwsLC+fLLr1i8eAmrVq1i/PjxhscvSXp6Oq+99hqnTp3ixx8XYmtrq2xiZOPGjVy7Vjgjm5vzD/74409Dt19kZCRPPvkUgwYNYuzYsUZtb+Wll14iMLARLVu2Mhzt2rVn6tSppKamEhDgz8cff8yECRP47LPP+Prrr0s8WrduDYphpGnTpjF+/OO8+eab5eqNEaIitGjRgkOHDha7Zjz77LNGw44lXTMaNWrEv/+uMfRcLFv2J99//x2PP/44r7wyjfvvv59Ll4JRqVQAZGerUakscHXN7wUdOzZ/DsTixUv48suvuH49jMGDBxseXykgwJ85c+YwatQow9BI0WPIkCHMmTOH1q1b065dO86dO8/ixUuYO3cuvXr1Ktfcp/DwG+zatZvc3FwyMzPZtm0b8fHxRm3MzMx45plJPPjgA/z55zLUajWWlpYMHjyYOnXqGLVFrgMGEh6qsPj4eEaMGMnQocMYMWKk4Zg373OjYQtvbx+0Wh1hYdcNZVeuXOGHH/6P8PBw/vjjT1JSUli8eDF2dvYsWbIEvV5veJFwc1jh8uVLNG3aFG5OIPrll5/x8PAgJiaGJUsW4+/vb3h8JZ1Ox/z582nWrDk//7zIqIu0LD/++JPRbU8zZ840GjpJSUlh1qz/MXXqlFv2eijZ29uzevUqo4vonj278fMrvCDk5OTw88+/3HINCmdnZz766CMeeGA0r7wyjVmzZvHdd9/y2Wefmfy8hLhXLly4QL9+/Rk+fITRNWPVqlVGr8mSrhnLlv3F2bNnWLbsL65fv86WLVu5ePEisbGxbN++nby8PENwAAgLu45Wq8Pb2weAOnXqsHjx76SlpWFra8uvv/5yy+tAamoqH3/8CcnJKUblarWaBQu+NAxPenp68tNPPxIeHsYDD4zmqaeeNGpfkoCAACZOnEDDhg144YXneeGF5/H19WHy5Bdwciq8c61Adna20e2bBfr3728Y/pHrQCEJD1VYwR/x4sW/s3HjBsOxa9dOPvnkE0M7X18fmjdvzr59++Bml+GaNWvo2rUr/v7+REVF4ufnR2JiIpaWKl56aQqpqSnY2NhgY2MDN8NGZmYWbdu2Mzyuo6MjEydO4M0338DHJ/8CURoLCwvmzJnD888/V+IM5dKMH/+Y0af8zz//nGbNCidmtWzZki5dutzTF2bBZE7lIjUxRRbSsrW1ZfDgwYwaNYrAwIa1epa1qLpyc3Px8/Nj1aqVRteMAwf288wzkwztlNeMpKQk9u3bR+vWbWjevBkXLlykZ8+e7N69myFDhtC3b1/Cw28YJi0C7Nu3j+bNm+PrW3ht8PHx4eWXp/Lii5NxdHQ0lJfFzs7OMHm64Bg1alSxO7Xq1KnDu+++y/33319suKUkrq6ujBw5ktGjR9O1a1d69erF6NGjGTx4MLa2+dc9pZycHGJjjRfKSklJITc3F51OJ9eBIiQ8VGHKiX9Fj6FDhxm632xsbJg4cQIrVqzk2rVQEhIS0Gq1DBs2DGdnZ8aPH4+9vT1z587FwcGB9957jwkTJjJgwADs7e3RaDT88MNC+vfvR2BgQ+XTuCvc3FyLveCdnJx4//0PjH6uLl26EhoaanQniJK1tTXPPvsMzs7O2NnZljo8YmlpyeOPP2H0+AMHDkKnKxzrtbCwoHXr1ixatKjYWGt55zsIUVVYWVkRGhpKly5di10znn56kuH2RuU1IygoiAEDBlC/fgBt27alZ8+eNGnSmPfff5+goCCefHIiv/76q2EY4tq1UFasWMnEiRMMH0BuR2nXuPJcBwCeeOIJAgICyrwOlMbBwXjYw9bWloAAf77++qti14Git7aLfGZaraZ2DdTUUBqNhtdffx2AL774wqRP/+vWreOzz+ayfPlfZQ5NCCFqjtu9ZtzueaJmkfAghBBCCJPIsIUQQgghTCLhQQghhBAmkfAghBBCCJNIeBBCCCGESSQ8iDKFhYUzZ84cwsLCjcrVarXROgg6nY74+Phi6yTExMQY7X6XmZlptJX4rYSFhfPZZ3PLXMTp+PHjXLp02fB1ec7BhHZC1HYF29qfO5e//HQBjUZDXFyc0Ws8NTW12DUgJiaGpKQkwyqMJZ1XltTUVD77bG6x61BZlM85MzPT6PkU3Z5827ZtfP31N7fcR0OuGYUkPAgyMzMZMWIkzs4uhsPX14/Tp0+TnJzEypWrSE4u3CBGo9Hw5ptv8tRTTxs2wklKSuKJJyYU2xlv4MBBLF/+t+HchIREhg4dyvff/5/Rcq7JycnMmDGDdu3a8emnnxnWlE9OTuK///4rdY15tVrN3LnzWLGi8Hsoz1myZKnRKpZvvvkmYWHhxdoJUdtNnvyi0XXA2dmFTZs2kZ2dzapVq4mIiDC0LdjHZujQoSQkJBrK586dW+waMHDgIF577XWjnYHnzJnDY4+NN1o2Ozs7m08//Yx27doxY8YMkpPzl+HPzs7mv//+M7oOFSh67fj22+8MH0yUz3n58r8Nz6Vnz14MGDCQ69fz9/v5++8VbNmyxRAm5JpxaxIehMHy5X+RmprCpUvBNGxYuFhUTk4Ou3btNny6379/PytWrOTNN9/AysqKr7/+ho8++ohmzZoyaNDAYsfZs2eYNm0a27ZtIyDAn6lTX+a7777j0qVLcDOMTJ8+g+TkFBYuXMjOnTtZsGDBLdeK1+v1bNy4kZMnT7Js2V/s2LGjxHMOHjxIZmaWYc38Pn364ORUvtXvhKht5syZQ2pqClFRkfTs2dOo7vDhwxw/fhyAS5cu8d133zF16ssEBPizbds2pk2bRmZmZrFrwKBBA3FycuStt97i66+/QafT8corr3DhwgVWrlwFN1/PCxYsYOfOnSxcuJDk5BSmT59RZi9ldnY2kye/SHJyCvPmzWPFihUsWbJU2QyAZ56ZZFimfvXq/OW6Q0Kusnbt2mKLwck149YkPIhb0mg0hl059Xo9K1eupH379nTp0gWVSkXHjh2KbWpT0uHvHwDA8OHDsLW1ZdOmzXBztbqrV6/y3nvv0a1bNz788AO2b99R5na4ERERjBnzCDNnvsGqVSv58ceFTJ36Mo8+Oo709PydQYsq2O1u9OjRjBw50rCZjxCi/M6cOcuFC/l7z2zatBlbW1uGDx8GN3fVVL7mSzo6duyASqWiadOmDBkymNWrV5OZmUlSUhLbt+/gww8/oFu3brz33ntcvXqVa9dCFc+iUEhICNevh/Lee+8xZMgQ3ntvNsuXLyclxXivDIAvv/wKDw9PWrZsxeOPP4GDgwPNmzdn1qxZDBlSfAMvuWaUTcJDDbdp06Zi3ZAFQxJKBZtUTZr0jGFDGgAHBwdmznydwYMHk5SUxIkTJ+jevRv29vaoVCp69epFQEAAkye/yMSJTxY7Nm3azOjRo2naNH8bbS8vL9q1a8fBgwdRq9WEh4fh5OSEp6cHAPXr10ej0RAdHW14Dkp16tRh3rx5BAdfpE2bNjRv3pzt27fxzjtvl/lJRSkhIX+HvNI+rQhRE8TExNCqVeti14Ivv/xK2ZQ1a9Ywbdo0nn32OQ4dOmRU98ILzzNx4gTUajUHDx6kXbt2eHl5AdC0aRMGDRrEjz/+VOwaMHHik7z99juGPSZUKhVmZmb069ePCxcuEBERSXR0NLm5udSrl79/hpeXJy4uLoSHF16LlG7cuIG7uwdeXp4AeHh4EB4ezuuvz+Sdd94lNjbWqP2YMWMMvQ8bN27g3LlzDBw4iO+//z+jdmWRa0Y+CQ813PDhw0lNTTE6oqOjaNeucAMsOzs7/vhjKQsX/sCsWbP49ddfOHnyBC1btsTKyoq6desa1phPSEgkNjbO6Hxu7mD388+LWLJkcbHj2WefMWqrUqlo27Yt4eFhZGZmYmlpiVarRavVws3JlxYWFlhalr6u/fz5C+jQoQMeHp54eHjSvHkLRo8ezaJFi0hISFA2L5WtrQ29evWiRYvCzbiEqGl8fHw4f/5csWvBjBnTjdrNnfsZf/+9nFmzZvHllwu4ePEC/fv3x8LCgjp16hj2j8jMzCQ8PIy2bdsa7bRpbW3NW2/NKnYNWLJkMV9+uQBnZ+PdLBs1akReXh7R0VGG13tubn741+v1mJmZlbn8tUqlQq/XGw1XFryme/XqVWy/i7/++ssQnNzc3Dlz5gxBQeeZOXOmUbuyyDUjn4QHgZmZGW5ubnzzzTeGCUX9+w+gXbv2PPLIWMWEpixycnKMLhgAaWnp7N27l507dxY7Cro5i7KwsCAzMwuNRkNAQH0yMjIMPQ0XL17EysoKb+/8TzQlef311wwXwEcffZQxY8Zw/Phxvv32WwYPHsxHH31Y7EJVEnt7B4YNG0qnTp2UVULUOs7OzmzYsNFoomPHjp3o16+/0WRJjUZDZmZWsc3utFotJ06cLHYN2LlzJwcOHDBMsC5gbm6ORqMhOzsbb28v7OzsCAm5Cjd7FRITEwkIqG90TlH+/gEkJMRz48YNuDmMUadOXR55ZAzDhg012hJ8xozpJCTEc+1aCElJiaSmpjBr1iwA+vTpzfPPP3fLjbiQa4aBhIcazpRhizfffJMdO7YbHd9887VhS1oAZ2cXHB0di80rCA29xvr1G9i+fUexY9euXcVuycrISMfDwwMbGxvq1w+gb98+PPXU08ydO4+pU19m3LhxuLi4GJ2jFBMTQ8+evRg37lHmzv3MUB4WFsY777xrdDtVQVfs+PGP07JlK3r27FXmsIgQNYkpwxbjxj1a7Drw99/L0el0hrsMbGxs8PDwICPD+DqQnp7Oxo0bi10Dtm/fwZYtW4mMjDRqr1arsbS0xNXVFRcXF8aNG8fUqS8zd+48nnrqafr27UP9+vlzpUoSGNiQ3r1789RTT/Ppp5/y5pv/Y8qUl7C3N94xs0BQUBAjRozk4sWLRrdtbt68mZ9+WmQUbuSaUTYJDzVceYYtCrz55v9o2rSZ0fHQQw8bTT5ydXXBz8/PMOO6QHZ2Nr6+vvz3339GF5133nm72LijWq3m7Nlz1KtXDwcHB8zMzPjwww+ZOfN1YmNj+O67b5k06Wmjc0qTlpbGM888S48ePQ3b+T788Bij3pJnn32GV1+dwYABA5gw4Qk2bdrIxo0b8PX1NXosIWqq8g5bAPz006Ji1wHlG6eDgwP16tXj7NlzRmsj6HQ60tLS+Oabr4uFj7y8vGI9DxcuXMTGxgZvbx8AJk16mu+++5bY2BhmznydDz/8EDMzM6NzilKpVHz88ce8/vprxMfHs2TJYoYPH65sZiQyMpKHHx5j1LuinPMg14xbk/AgjLzxxkwuXQo2Ok6dOknjxo0BcHFxoUuXzhw9eqzYjOaUlGSOHTvKkSNHDEdwcLBRG4Do6BjOnDlD//79DcMflpaWjBkzhgULFjBo0KAyLxhFOTg48NNPPxpdqH766UccHBwMbTp16mSYNT18+HD8/f3LNaQhRG01evToYteBS5eC6dGjB9x80+7fvz9nzpwhOjrG6FydTsvZs+eMrgPHj58gJ8d4ASatVsuuXbto27Ytvr754cHMzIxBgwaxYMECxowZU+Z8hwK2trY88sgjLFiwgB49etzy2lGnTh1Wr15ldM2YMuUlozZyzbg1CQ/CwM3NlWXL/iq2uMtAxUJP48eP58qVK2zZssXo/KSkZPbs2WM0znnmzFmjNnq9nmXL/sTe3q7E26NMYWFhgZOTE6+8Ms3oub7yyjScnJyKjccKIW7NycmJEydOFLsGDBw4iLlz5xraDRkyGHt7O5Yt+9NowmLBrd1FrwP79+8nO9s4PBw7doydO3cyceIEbGxsjOruFSsrK8zNzXn00XFGP9eyZX/h7e2tbC7KYKbVaoqvqiNEGfIXc/mSP//8gzVr1uDv769sUqoTJ07w6KPjmDdvLg899JCyWghRjfzzzz+88cab/P33cjp27KisLlVaWhpPPDGBunXr8PXXX5erh0FULRIehBBCCGESGbYQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwi4UEIIYQQJpHwIIQQQgiTSHgQQgghhEkkPAghhBDCJBIehBBCCGESCQ9CCCGEMImEByGEEEKYRMKDEEIIIUwiW3JXMzlZ6WhyMpXFQgghqgBLa3us7RyVxTWOhIdq4NKhtVw6+C83LuwnIyVBWS2EEKIKcXDxoF6LXjTt8SBNu49WVtcIEh6qsNDTO9j3x2xiwi7SsmUT6jeoh5u7K9bWVsqmQgghqoCcnFySEpO5HnqDoKDL+AQ0p/cTH9Cg3UBl02pNwkMVdWTNN+xeOpsOHVvTvWcn7OxslU2EEEJUYVlZ2Rw6cJyTJ87Rb8IHdH3gFWWTakvCQxV0dN137Fr8DiNHDaRFq6bKaiGEENXIhfOX2LB+B/2f/Igu909VVldLcrdFFRN+fh+7Fr/DiFEDJDgIIUQN0KJVU0aMGsCuxe8Qfn6fsrpakp6HKuaP//XH0z6XwcP6KquEEEJUY9s27yE+04onPtulrKp2pOehCrl2ahuRV07RrUdHZZUQQohqrluPjkReOcW1U9uUVdWOhIcq5PLh/2jSrDGOTg7KKiGEENWco5MDTZo15vLh/5RV1Y6Ehyok4sI+Avz9lMVCCCFqiAB/PyIuVP95DxIeqpDk2Bu4urkoi4UQQtQQrm4uJMfeUBZXOxIeqgidNpc8nRYra5WySgghRA1hZa0iT6dFp81VVlUrEh6EEEIIYRIJD0IIIYQwiYQHIUqRmplLXHIWGm2esuqWNNo80jIrplsyOT2HjQdCOX4xVlnF5fBkNh4IJTk9R1lloMvTE5+STUxiFjGJWahztcomdyQ6IZN1e0OITjB9N9jL4cm3fe6dfN8CZf1uy6M8v//yuN2fpeD5Xw5PVlYJcUdkkagqQqfN5YtHvXjiyYfx9fVWVosKoMvT89++a3z82xGuRqQY1VmqzHlsSDPenNAJP8/it9Lq9XDofDQf/HyIYxdjycsrfFl5utgyfmgzXnu8E452lkbnhcek8X+rz6DO1RmVKzWs48zzD7TGxqr4nJjTl+MZ+eoa7u/dkB/eNN5856vlJ/n8jxNsWPAA7Zp4GsoLnu+cRYc4diHG6BwAZ3srnhrVssTnbKrNh67z2Lsb+evDEQzrXl9ZXaavlp/k/Z8PG52rztWSkl5yMHO0t8TeJv/53ur7ngtJ4Jd155XFAIzs2ZDBXfzL/N1y8/d4IzaNS+EptG3sgZernVF9ab//0rw4dwd7TkWw/duHjf7ObvWzlKbg+c98oiPTx3VQVotKEB0dyx+LV/P633FYqKrvJofS8yAEoNXl8ca3+3j6wy009ndlxSejCPprIhf/foqDP4/jvWe78+/uK/SZvILg60lG5+r18M2KU4yc8S+pmbnMm9qbgz+P4+yfE1g6ZxgDOvvz9d+nGDhlJVHxGUbnZmRr2Hc6iu3Hwks8th4JY+mmi2w9HIauSCDZfTKCVuOX0Gr8Eh6ZtZ4stYbVu64Yyt7+4YDR91HaffIG9722BldHa7Z88xDX1z5L8vaXiNs8mXPLJvD2pK4sWnue5z/ZRnZOyT0Rmw9dx3XQ/5V6tB6/lJjELOVpAGSqNYx6dU2xc251HsDuExE0f/T3Eo9Fa84pm5cqMi6DxRsuEB6TbihLSFGzZOMFgq4lGLUtSVpmLmPfWk/bJ/5g7FvrafrI73z+x/Hb6qni5uNdjUghJjGTC4q/sZKU9fv/avlJZXMj246GM/3L3Ww7Gq6sEqJcJDwIcfNNY+uRMEb2bMji2UMZ3MUfP08HfNztaF7fjSlj2vJ/bwwkMVXNjuPGt1nFp2Tx+4YLtGnkwYYFD/DM/a1oXt+Net6OjOrVkIVvDuT7mQO4ciOFLUfCjM5t0cCdA4se5fyyiSUex34fT/dWvkbnALg72zCosz+DOvvTtZUvZmbg6+FgKGtW3015ipEzV+IxA14a05YuLXxwts//BGSpMqeulyOPDWlGm0YeBIcnk55V8qf8to09WTx7KItnD+WrGf1wtreie2tfQ9mC6X1xdij5k5W1pQX/e7KLoe3i2UP5ffZQurTwwd5WhaXq1pemH94cyMW/n+Li30+x6rNR2FqreP/nw4Y30Mfe3ag8pUTPP9Car2b046sZ/Xj98Y7YWhfvaQmLSWPd3hDD8IVWl8f7Px9m54kbfDalN6eWPsGk+1ry6eKj/Lv7qvL0W9Ll6fl53TlOX47H2d6amd/uK/dQw7RH2xv9HhfPHsqIHg2UzYwEXUtg8YYLHDkfrawSolxu/QoVohaws1Hh427H/tMRnAiORa8YzEvP0rB2bwhmZtA0wNWozsLcHGtLc9KyNGSU8Ear10NMUv5YtYNt8Temsuj1+W8sSq0DPQxveK+O74CNlYouLbz5cnp+2YThzZWnGBnU2R8XR2see2cjr361h392XWXd3hDW7Q3hl3XnGTH9X44ERfPowCZ4uhh3xRfw9bDn/j6B3N8nkKHd6uNob02Aj5OhbHAXf2xLufVYZWFOr7Z+hrb39wlkUBd/LFXm+LjZY2NloTylGBcHa3zc7fBxt8PdyRYzMzPGDGhseAOd9mh75Sm37dC5aJ78YIthmONaZCr/7r7CpPta8vwDranv68TbT3elfRMvlmy8QKZao3yIEmm0eRwJiuGRWev56NcjTH6oDTu+H4ONlQXdn13Oi3N3cOWG8RCaUrdWvka/x/v7BNLE3/hvVIi7TcKDEICTvRUL3xxEYF0Xhk//F+/hCw1DAI0f/g3/+xexdm8Ic57rTt/2dY3OdXe24Z2nuxIZl063Z5bz3CfbWLrpIuv2hvDZ4mP0nbyCD385wqDO/gztVv7xaoCMLA0RcRnU83Y0jOUrnQiOJTtHy/HgOG7EpimrS9Qq0INTSycw+5lunAtJYPaig7y18ABvLTzAwn/O0qONLzu/f4Q3J3bGzEx5dnF5eXno8vLIVGvQ6srfbV90smbw9SQuhSXTNMAVexNDVoGWDd0Nb6DdSuixuV3jBjcleftLhnkP1yJTSU7PYUjX+obfj5uTDf071uNqRArxSaUPuxSl1eXx1V8nOXc1gUVvDWbOc91pWMeZrd88zOxnuhESmYrKohz/A0xU5+Z8Ch93e2WVEOUi4UGImwLrOrP9uzGc+eMJfnt3CE8Mbc7QrgHMfrYb/81/gPB1z/LK2PYldqmP6tWQs39O5JWx7QkOS+aDnw/z3Kfb+WPLRer7ObH8o5Es/3gkTjeHB8orLTOHzOzcUs87ERzLx78eoV0TT5JTs3nt671l3uVR9M06M1vDA30bsXTOcLZ/O8Zw/Df/AaaP64iPuz2xSeW7AyM8Np345GwuhyeTmlH69y/w0a9HcB30f3gM+YEmY36j+aO/M2jqahJSs+nXwTicmeKLP08YQt+Lc3coq0v02LsbDUMd/V9aSVY5eg1CIlOxs7HE08XWqNzBzpL0LA0p5fgdANhaq1j83lAurniSPu3rEp9c+P/mvl4NmfZoO0IiU285ofZWCn4vkz7aSma2Bke7/L+n0oaVhLiV4ldBIWqZgtsB1+0N4b99IZy+HI9Op6dFAzf6tq+Ls70VSanZbD0cZmi3/0xUsU/YPu52/O/Jzuz7cSxXVj9N7KYXOL9sIkveG8bQbgFYmBt/gkzNzDXcHlnacfF6EikZOXi52eW/qdx8Y9Pl6Vm96woPvrEOdxdblrw3jG9fH8DOEzfoO3kFGw5cK3HiXnxyNgNeWlVsouGtjt0nIpQPZWTPyQi0ujwuhydz6nKcsrqYx4Y045e3h/DXhyM4++cEDv/yGC0butO4ngsdm5fvbqPD56MN/z92n7xBrkZH43ouhnkf7Zt6KU8xUnTOhvK41ZwBL1db9Ho9ecrxLRO9OHcH3sN/xHPoQkOIKjg6PvknT3+4lWVbgo3u3rkdBb+Xdk08sbgHPRmi9pFbNasIuVWz8hTcDmiKnm38+PuTkSxac87kc+t6ObLt24d5/+dDLN92SVldpvee7cb0cR34buVp3v3xIK0DPfjt3aEE1nUG4MDZKGZ8uRsvVzvD8zPlVsHbER6Txug3/qNDU0+uR6VhbWXB8o8Ke1ludZthwd0q7/98iC9e6cOk+1oZ6kq6VXP3yQimfrGzyCMUevWxDobzb/V9AbJztOw/E0X2LXob/Dwd6FQk1Ow+GcFDb67jx/8N4pGBTeDmzzH1i53sPRXJtm8fxsfd7pa3amaqNaRnFn7vX/87z3crT7Pqs/vo0bpw2KWkn6WkMqXSbtXcfTKCsW+t59d3hjCqV0Ojc8S9VVNu1ZTwUEVIeKielBf/AgVvAkvfH0bLBh5GdRYWZjg7WJOSribvZudASe1LKitYxyAzW8Ol8GTaNvYs1qOh14NGq8PK0oJtR8PZcSyMlx5ui7+Pk6FNWW/ARY3uHcjHL/ZUFhtotHnM/HYvK3dcYcOCBwiNSuWZj7cycUQLPn+5D5Yq8zLf5PR6+HndOf73/X6GdAng13eHGE2yLCk8lFdZ37dATGIWg19eTURc4e2aJRk3uKnROg9xyVmMenUNgXVcDM85NCqVETP+pUcbP3783yBUFua3DA8FMtUaMrM1LN5wga+WnyrWvmBtCxdHK8NaH2X9fHo9ZKk1XLmRUmJ4OH05nrFvrWfJnGF3dW6IuLWaEh5k2EIIIDNbw6SPthrGy8s6dp8s7MK3t7HEw8WGqxEpXI1IwcPFBh93O+xsVJiZmeHuZGu4I6Dg8HSxxUpljpdrYVlJ7UsqK5g0aW9rSYemXizbEsz0L3cbHTO+2s0b3+1j+pe72XDgWpGfslBTf1c+mdyz1GPm453IyMwlKU2tPNUgPUvDS/N2sHjDBd6Y0Im2jT0Z1ashT49qxeINF3jivU1cjy59Amd6lobXv9nDG9/uo3fbOvw4a1Cpd2eU5FxIAtO/3M25kFuvyVAaH3c7zi2bQPL2l0o8Lv79FHW9HJWn4eVqx8QRLdhy5DqPz97Ej/+e46E3/yNbreWlh9uisjDt0rpozTnaT/iT7q39OLX0cVo2dDeqL1jboqTho5/WnGPwy6uNJvi6Df4/Xv9mr7KpQYCvE1/N6EdAkUAphClM+wsXoqYyg7ikLNQ5Wvq2r2sYNy96NKnnSmRcBmrFokk5Gh2fLT7KZ4uPkqO5s4ltd9uZK/Es3RRMUprx8sgJqdnsPHGj1GP/mUiyy5ikp8vT88Evh1i18wpTH2nHSw+3xcwsf52Iz6b04q2nunA1IgVFp4jBxgOhtBz3O7/+F8T4oc3484PhpU4KLU3BIk+RccYLbxUomNPQtnEZn/hvERr7v7Si1F6JFx9uy9ypvTl8Ppr/fb8PgD8/HEHHZrfXc5il1vD0B1sYMGUV7Sf+YfQ8Spr8aWOtoo6XA5dvJJOQqqZzc28Gdfbn/j4N+ea1/kwZ0xZ9KXMy4pOz0OrySl3DQ4hbkfAgRBHNAtyY93JvwxoKRY/nH2itbF6q6eM6ELn+uTK7qu+GCcObF3ueRY/RfQKVp0ApqysWZW9ryWNDmtKjjZ+yCgALczPendSNfT+O5YPnexjdgWKpMmfmE5048utjRkMlRXm729E0wI21n4/mu9cH3PatmWUpWIfC16OM2xFvhkZbKxWzJ3Ur1gMzd0pvFs8eyjP3F87DKGBhbsZzo1sTteF5kre/xKmlT9CzlN9XeagszJnySNtiz+GTyT15cmQLZXP6dahrWEzs1JLH+e3d/MW65k/ry4ThzWkV6IFZKffZbjwYypMfbGHF9svKKiHKRcKDEEXkavOIu3l7ovJIySh7c6PYpCw27A813AFQ0lHeVQMrStHVFUs6ylpsysne6uYblLImX1ld9x2bebPt24fp075OqeeXV9G7Lko6yrOplauTDZ1beNOlpW+JR4CvU4mLdd1NlipzWjfyKPa9u7T0veWKoUJUNJkwWUXIhMnKlanW8OhbGzhwNkpZVYxygpop5xbcLaFU0sS6kspMVdpjFEy2uxU7G8ti55qqrIl9t1LWhMny/gzKyY5Flff/XcEdMj7uJa+2WZrSfv9K5b3jp6TfQ1lKu9tCVJ6aMmFSwkMVIeGhcun1kJyuJldTfG0EpaIz3u+Wy+HJXL2RQvc2frg6WpdaZqrSHqOsnSmLMjcHV0ebEhfGKq/ohEyOXYihcwufsocQSnA5PJng60m3dW55lPf/u4WFGW5ONsXubLmV0n7/SqXdtaNk6t9ecnoOh85G0aieiyxZXUVIeBB3lYQHIYSo+WpKeLj9jxNCCCGEqJUkPAghhBDCJBIeqoiC7itdCfsRCCGEqBkKrvHVecgCCQ9Vi5O7L6mppa/IJ4QQonpLTU3Dyb36Lwku4aEK8WvSmciIaGWxEEKIGiIyIhq/Jp2VxdWOhIcqJLDzCIKDQ9HpSl8WWAghRPWk0+kIDg4lsPMIZVW1I+GhCmnVdxw2Dm4cPXxKWSWEEKKaO3r4FDYObrTqO05ZVe1IeKhieo17m/37jhIhwxdCCFFjREREs3/fUXqNe1tZVS1JeKhiWvUfT/uhT/Pfup3ERMcpq4UQQlQzMdFx/LduJ+2HPk2r/uOV1dWSrDBZRW38fgpBe/9m8OBetGlbfEc9IYQQVd/ZMxfYtm0/Lfs8yogp3yurqy0JD1XY0bXfsvuPOfj4+tKyRUPqN6iHq5uzspkQQogqJDkpleuhNwi6cI2Y6Gj6PTGHLqNfVjar1iQ8VHFpiZGc2vwzwftXkRJ3A3OVChvr0jfYEUIIUXnUOTnkabW4eNWjWa8xtB/2LE7udZTNqj0JD9VISmwYqbGh5KozlFVCCCGqACsbB5y9G+DiHaCsqlEkPAghhBDCJHK3hRBCCCFMIuFBCCGEECaR8CCEEEIIk0h4EEIIIYRJJDwIIYQQwiQSHoQQQghhEgkPQgghhDCJhAchhBBCmETCgxBCCCFMIuFBCCGEECaR8CCEEEIIk0h4EEIIIYRJ/h+jIbUeTmCycAAAAABJRU5ErkJggg==" alt="말이 음운규칙을 지키면 장애물을 가볍게 넘고, 지키지 않으면 틈에 빠진다는 것을 보여주는 그림">
+        <figcaption>음운규칙 = 말(言)이 가볍게 건너뛰도록 놓는 징검다리</figcaption>
+      </figure>
+    </div>
+
+    <div class="box">
+      <div class="box-label">이 안내서를 여는 법</div>
+      아래로 내려가며 순서대로 읽어도 되고, 상단 메뉴를 눌러 필요한 부분만 볼 수도 있습니다. <b>원칙 1~4</b>는 교재 전체에 공통으로 적용되는 설계 원칙이고, <b>8개 규칙</b>은 각 단원을 만들 때 바로 펼쳐 보는 참조 카드입니다.
+    </div>
+
+    <h3 class="sub-title"><span class="letter">→</span>제작 흐름 한눈에 보기</h3>
+    <div class="flow">
+      <div class="flow-step"><span class="n">1</span>목표 규칙 선정 &amp; 8단계 지도순서 확인</div>
+      <div class="flow-step"><span class="n">2</span>핵심낱말·연습낱말 선정 (원칙 1)</div>
+      <div class="flow-step"><span class="n">3</span>도입 활동 + 명시적 중재 스크립트 작성 (원칙 4)</div>
+      <div class="flow-step"><span class="n">4</span>부적 예시·대조카드 배치 (원칙 3)</div>
+      <div class="flow-step"><span class="n">5</span>일반화 점검자극 구성 (원칙 2)</div>
+      <div class="flow-step"><span class="n">6</span>3p 조판 + 체크리스트 검수</div>
+    </div>
+  </section>
+
+    <section id="p1">
+    <div class="sec-head"><span class="sec-num">원칙 01</span></div>
+    <h2 class="sec-title">자극 선정의 원칙</h2>
+    <p class="sec-sub">낱말을 고를 때 "무엇을 똑같이 유지하고, 무엇을 다양화할지"를 먼저 정해야 아동의 오류가 규칙 미습득 때문인지 다른 이유 때문인지 구분할 수 있습니다.</p>
+
+    <h3 class="sub-title"><span class="letter">가</span>통제 요소 vs 변화 요소</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>구분</th><th>요소</th><th>처리 방식</th><th>이유</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3">똑같이 유지</td><td>목표 규칙 외 다른 소리 변화</td><td>배제</td><td>오류 원인을 목표 규칙으로 명확히 한정</td></tr>
+        <tr><td>낱말 음절 수</td><td>2~3음절로 고정</td><td>음절 길이 자체의 난이도와 규칙 난이도를 분리</td></tr>
+        <tr><td>낱말 친숙도</td><td>너무 낯선 낱말 배제</td><td>몰라서 생기는 오류와 규칙 오류를 분리</td></tr>
+        <tr><td rowspan="3">다양하게</td><td>규칙이 나타나는 위치(어두/어중, 조사 등)</td><td>다양하게</td><td>낱말 하나만 고정하면 암기와 이해를 구분 못함</td></tr>
+        <tr><td>사용 빈도(고빈도/저빈도)</td><td>섞어서</td><td>고빈도만 쓰면 새 낱말에 일반화되지 않음</td></tr>
+        <tr><td>낱말 형성 방식(명사+조사, 동사+어미 등)</td><td>다양하게</td><td>단원에 따라 핵심 변별 요소가 될 수 있음</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:13px;color:var(--ink-soft)">※ 이 기준이 모든 단원에 동일하게 적용되지는 않습니다. 일부 단원(예: 낱말 형성 방식이 핵심인 단원)에서는 반대로 다뤄야 할 수도 있습니다.</p>
+
+    <h3 class="sub-title"><span class="letter">나</span>낱말 길이·친숙도 확인 순서</h3>
+    <p>연습 낱말은 <b>2~3음절</b>을 중심으로, 단순한 음운 구조 → 겹받침 등 복잡한 구조 순으로 배치합니다. 친숙도는 임의로 판단하지 않고 아래 순서로 확인합니다.</p>
+    <div class="flow">
+      <div class="flow-step"><span class="n">1</span>또래가 흔히 쓰는 교과서 낱말 목록에 있는가</div>
+      <div class="flow-step"><span class="n">2</span>없다면 국립국어원 사용 빈도 자료로 확인</div>
+      <div class="flow-step"><span class="n">3</span>그래도 어려우면 아동 발화 분석 연구 참고</div>
+      <div class="flow-step"><span class="n">4</span>끝내 확인 안 되면 '저빈도 낱말'로 분류(모호하면 저빈도 쪽으로)</div>
+    </div>
+
+    <h3 class="sub-title"><span class="letter">다</span>최소대립쌍으로 규칙 자기발견 시키기</h3>
+    <p>언어재활사의 설명보다, 두 낱말을 비교하며 아동이 스스로 규칙을 발견하도록 하는 활동입니다. 두 낱말은 <b>하나의 조건만 다르고 나머지는 모두 동일</b>해야 합니다.</p>
+    <div class="box ok"><div class="box-label">✓ 적절한 예 — ㅎ탈락 단원</div>〈좋다〉[졷따] vs 〈좋아〉[조아] → 후행 음소가 자음인지 모음인지만 다르고 기본형·의미는 동일. 아동은 'ㅎ이 탈락하는 조건'에만 집중할 수 있음.</div>
+    <div class="box no"><div class="box-label">✕ 부적절한 예 — 같은 단원</div>〈좋다〉[졷따] vs 〈놓아〉[노아] → 낱말의 기본형 자체가 달라 변별의 초점이 분산됨.</div>
+    <p style="margin-top:10px"><b>구성 절차</b> — ① 핵심 적용 조건 하나 선정(예: 받침 뒤 자음/모음 여부) → ② 그 조건만 다르고 나머지는 동일한 낱말 쌍 2~3쌍 구성 → ③ 실제 발화로 청각적 변별이 되는지 확인 → ④ 규칙에서 벗어나는 예외 낱말은 별도로 다룬다(원칙 1-바 참고).</p>
+
+    <h3 class="sub-title"><span class="letter">라</span>목표 외 음운변동 개입 확인 — 3단계</h3>
+    <p>가장 흔한 오류 원인입니다. 표기만 보고 판단하지 말고 반드시 아래 순서로 실제 발화를 확인하세요.</p>
+    <div class="flow">
+      <div class="flow-step"><span class="n">1단계</span><b>발화 확인</b> — 실제로 발음해본다. 예: 〈떡 하나〉는 표기상 문제없어 보이지만 실제로는 [떠카나]처럼 격음화가 함께 나타남</div>
+      <div class="flow-step"><span class="n">2단계</span><b>후행 자음 확인</b> — 받침 뒤 자음이 오면 경음화·비음화 등 다른 음운변동이 함께 나타나는 경우가 많음</div>
+      <div class="flow-step"><span class="n">3단계</span><b>형태소 결합 확인</b> — 조사·어미 결합 시 두 가지 이상의 음운변동이 동시에 일어나지 않는지 재확인</div>
+    </div>
+    <p style="font-size:13px;color:var(--ink-soft)">세 단계를 모두 거쳤는데도 다른 음운변동 개입이 불가피하면, 자극을 빼지 말고 <b>의도적으로 남긴 자극</b>이라고 별도 표시해 미확인 상태와 구분합니다.</p>
+
+    <h3 class="sub-title"><span class="letter">마</span>고빈도·저빈도 10 : 10</h3>
+    <p>연습 낱말 20개는 <b>고빈도 10개 + 저빈도 10개</b>로 고정합니다. 고빈도 낱말은 성취감·자신감을, 저빈도 낱말은 암기가 아닌 규칙 이해 여부 확인을 담당합니다. 고빈도로만 구성하면 새 낱말에 일반화되지 못하고, 저빈도로만 구성하면 아동 부담이 과도해집니다.</p>
+
+    <h3 class="sub-title"><span class="letter">바</span>예외 낱말은 규칙으로 가르치지 않는다</h3>
+    <p>'밟다[밥따]'처럼 표기만으로 발음을 예측할 수 없는 낱말은 규칙 발견 활동에 넣지 않고, <b>일견단어(sight word)</b>로 전체 암기하도록 별도 지도합니다. 규칙으로 가르치면 아동에게 오개념을 형성할 수 있습니다.</p>
+
+    <h3 class="sub-title"><span class="letter">사</span>자주 나타나는 오류 유형</h3>
+    <ul style="padding-left:20px;font-size:14px;color:var(--ink)">
+      <li>목표 규칙 외 음운변동이 자극에 혼입되는 경우 — 가장 빈번, 발화 확인으로 대부분 걸러짐</li>
+      <li>규칙 설명 여부만 기술하고 구체적인 발화 내용을 명시하지 않는 경우</li>
+      <li>숙달 기준을 '정확히 읽는다'처럼 모호하게 기술 — '10개 중 9개, 2회 연속'처럼 수치로 명시</li>
+      <li>예외 낱말을 규칙으로 지도하려는 경우</li>
+    </ul>
+  </section>
+
+  <section id="p2">
+    <div class="sec-head"><span class="sec-num">원칙 02</span></div>
+    <h2 class="sec-title">일반화 점검 자극 설계</h2>
+    <p class="sec-sub">훈련에서 배운 원리를 새로운 자극에도 적용하는지 확인하는 단계입니다. 핵심은 "훈련에 썼던 낱말을 점검에 다시 쓰지 않는 것"입니다.</p>
+
+    <h3 class="sub-title"><span class="letter">가</span>훈련-점검 자극 분리</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>구분</th><th>자극(경음화 예시)</th></tr></thead>
+      <tbody>
+        <tr><td>훈련자극</td><td>학교</td></tr>
+        <tr><td class="ok" style="color:var(--ok);font-weight:700">점검자극 — 적절</td><td>미훈련 실제 단어 (동일 규칙이 적용되는 다른 낱말)</td></tr>
+        <tr><td style="color:var(--no);font-weight:700">점검자극 — 부적절</td><td>'학교' 재사용 (훈련자극 그대로)</td></tr>
+      </tbody>
+    </table></div>
+    <p>같은 자극을 점검에도 쓰면, 규칙을 이해한 것인지 낱말을 암기한 것인지 구분할 수 없습니다.</p>
+
+    <h3 class="sub-title"><span class="letter">나</span>저빈도 점검자극, 어디서 고르나 — 낱말은행 활용</h3>
+    <p>점검에는 지나치게 친숙한 고빈도 낱말보다 <b>상대적으로 친숙도가 낮은 저빈도 실제 단어</b>를 씁니다. 고빈도 단어는 천장효과로 규칙 습득 여부를 가려내기 어렵기 때문입니다. 본 교재에서는 교과서 내 어휘 빈도를 기준으로 삼되, <b>Tier 1(매우 친숙)은 제외</b>하고 <b>Tier 2·3에 해당하는 어휘</b>를 점검자극으로 선정합니다 — 구체적인 방법은 <a href="#words">7장 낱말은행 사용법</a>을 참고하세요.</p>
+
+    <h3 class="sub-title"><span class="letter">다</span>미훈련 활용형 만들기</h3>
+    <p>동사·형용사는 훈련 때 쓴 <b>어간은 그대로 유지</b>하고, 훈련하지 않은 <b>다른 어미</b>를 결합해 점검자극으로 씁니다.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>용언 / 구분</th><th>어간 → 활용형</th></tr></thead>
+      <tbody>
+        <tr><td>동사 · 훈련 자극</td><td>먹- → 먹어</td></tr>
+        <tr><td>동사 · 점검 자극</td><td>먹- → 먹으면</td></tr>
+        <tr><td>형용사 · 훈련 자극</td><td>작- → 작아</td></tr>
+        <tr><td>형용사 · 점검 자극</td><td>작- → 작으면</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="p3">
+    <div class="sec-head"><span class="sec-num">원칙 03</span></div>
+    <h2 class="sec-title">부적 예시와 과잉일반화 방지</h2>
+    <p class="sec-sub">과잉일반화란 배운 규칙을 적용 범위 밖까지 확대 사용하는 현상입니다. 부적 예시는 '틀린 발음·오류 예시'가 아니라, 목표 규칙과 조건은 비슷하지만 <b>정상적으로 규칙이 적용되지 않는</b> 사례입니다.</p>
+
+    <div class="box"><div class="box-label">정적 예시 vs 부적 예시</div>정적 예시가 "언제 규칙을 적용해야 하는가"를 보여준다면, 부적 예시는 "언제 그 규칙을 적용하지 않아야 하는가"를 보여줌으로써 아동이 적용 경계를 스스로 형성하도록 돕습니다.</div>
+
+    <h3 class="sub-title"><span class="letter">가</span>변동별 과잉일반화 유형</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>유형</th><th>음운변동·예</th><th>부적 예시</th><th>변별 핵심 조건</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="2">음운적 조건의 과잉일반화<br><span style="color:var(--ink-faint)">(특정 음운환경에서 배운 규칙을 다른 유사 환경까지 확대)</span></td><td>비음화: 〈앞문〉→[암문]</td><td>〈산문〉은 [암문]이 아니라 [산문]</td><td>받침 /ㄱ/이 항상 비음화되는 게 아니라 후행음이 비음(ㄴ,ㅁ)일 때만 변별</td></tr>
+        <tr><td>구개음화: 〈밭+이〉→[바치]</td><td>〈밭+을〉은 [바틀], 구개음화 아님</td><td>받침 ㄷ,ㅌ이 항상 구개음화되는 게 아니라 뒤따르는 모음·형태적 환경 변별</td></tr>
+        <tr><td rowspan="2">형태·문법적 조건의 과잉일반화<br><span style="color:var(--ink-faint)">(형태소 경계·문법적 조건까지 규칙 확대)</span></td><td>용언 어간 비음 뒤 경음화: 〈신+고〉→[신꼬]</td><td>〈인구〉는 [인구], 경음화 아님</td><td>'ㄴ+평음'이라고 모두 경음화되는 게 아니라 형태·문법적 조건을 변별</td></tr>
+        <tr><td>관형형 -ㄹ 뒤 경음화: 〈갈+데〉→[갈떼]</td><td>〈절대〉는 [절대], 경음화 아님</td><td>모든 'ㄹ+평음'이 경음화되는 게 아니라 관형형 -(으)ㄹ 뒤라는 문법적 조건을 변별</td></tr>
+        <tr><td rowspan="2">제한적·예외적 현상의 과잉일반화<br><span style="color:var(--ink-faint)">(특정 어휘의 예외적 발음을 일반 규칙으로 확대)</span></td><td>ㄹ겹받침 예외: 〈밟다〉→[밥따]</td><td>〈넓다〉는 [밥따]가 아니라 [널따]</td><td>'밟-'의 ㄼ→[ㅂ] 실현을 다른 ㄼ 어휘까지 확대하지 않도록 변별</td></tr>
+        <tr><td>유음화 예외: 〈대관령〉→[대괄령]</td><td>〈의견란〉은 [의결란]이 아니라 [의견난]</td><td>/ㄴ+ㄹ/이라고 모두 유음화되는 게 아니라 적용되지 않는 제한적 환경을 변별</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="sub-title"><span class="letter">나</span>부적 예시 배치 원칙</h3>
+    <div class="flow">
+      <div class="flow-step"><span class="n">1</span>도입활동은 적용 예시 중심 — 부적 예시로 적용 범위를 먼저 넓히지 않는다</div>
+      <div class="flow-step"><span class="n">2</span>단원당 총 5개 구성, We do 후반부터 You do까지 단계적으로 도입</div>
+      <div class="flow-step"><span class="n">3</span>고정 비율이 아니라 예상되는 과잉일반화 유형을 기준으로 배분</div>
+    </div>
+
+    <h3 class="sub-title"><span class="letter">다</span>대조 카드 구성법</h3>
+    <p>목표 음운변동이 적용되는 예와 적용되지 않는 부적 예시를 나란히 제시해 비교·변별하도록 만드는 자료입니다. 두 자극은 음운적·형태적으로 유사하되, 규칙 적용 여부를 가르는 핵심 조건에서만 차이가 나야 하며, <b>동일한 형식(그림 → 표기 → 발음 → 핵심 조건)</b>으로 제시합니다. 부적 예시는 '틀렸어요' 식으로 표시하지 않습니다.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>목표 음운변동</th><th>적용 예시</th><th>부적 예시</th><th>대조할 핵심 조건</th></tr></thead>
+      <tbody>
+        <tr><td>비음화</td><td>국민 → [궁민]</td><td>국어 → [구거]</td><td>후행 음운환경</td></tr>
+        <tr><td>구개음화</td><td>같이 → [가치]</td><td>같아 → [가타]</td><td>후행 모음 환경</td></tr>
+        <tr><td>경음화</td><td>신+고 → [신꼬]</td><td>신문 → [신문]</td><td>형태·문법적 조건</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="sub-title"><span class="letter">라</span>제작 전 최종 확인 체크리스트</h3>
+    <ul class="checklist">
+      <li><span class="qn">1</span><input type="checkbox">목표 음운변동에서 예상되는 과잉일반화 유형을 확인하였는가?</li>
+      <li><span class="qn">2</span><input type="checkbox">부적 예시는 목표 음운변동의 비적용 조건이 명확히 드러나는 사례로 선정하였는가?</li>
+      <li><span class="qn">3</span><input type="checkbox">단원별 부적 예시를 5개 구성하였는가?</li>
+      <li><span class="qn">4</span><input type="checkbox">적용 예시와 부적 예시는 가능한 한 동일하게 구성하였는가?</li>
+      <li><span class="qn">5</span><input type="checkbox">대조 자극에서 목표 외 음운변동의 개입 여부를 확인하였는가?</li>
+      <li><span class="qn">6</span><input type="checkbox">부적 예시는 아동의 규칙 학습 정도에 따라 단계적으로 제시하였는가?</li>
+      <li><span class="qn">7</span><input type="checkbox">대조 카드의 정보는 일관된 형식으로 제시하였는가?</li>
+      <li><span class="qn">8</span><input type="checkbox">예외적 사례는 일반 규칙과 구별하여 제시하였는가?</li>
+    </ul>
+  </section>
+
+  <section id="p4">
+    <div class="sec-head"><span class="sec-num">원칙 04</span></div>
+    <h2 class="sec-title">명시적 중재 스크립트 구조</h2>
+    <p class="sec-sub">8개 단원 모두 같은 절차, 같은 발화 구조를 사용합니다. 규칙만 바뀌고 학습 절차는 바뀌지 않는다는 점이 처치 충실도를 높입니다.</p>
+
+    <h3 class="sub-title"><span class="letter">가</span>시각적 표시 규약</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>표시</th><th>의미</th></tr></thead>
+      <tbody>
+        <tr><td>◻ 네모</td><td>받침(종성)에 친다</td></tr>
+        <tr><td>○ 동그라미</td><td>바로 뒤에 오는 글자의 첫소리에 친다</td></tr>
+        <tr><td>→ 화살표</td><td>소리가 옮겨가거나 바뀌는 방향을 표시하고 끝에 바뀐 소리를 쓴다</td></tr>
+        <tr><td>∕ 빗금</td><td>소리 나지 않고 사라지는 글자에 긋는다</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="sub-title"><span class="letter">나</span>단원 공통 5단계 절차</h3>
+    <p>모든 단원의 학습지·스크립트는 아래 5단계를 그대로 반복합니다. 각 단계는 모델링 → 안내된 연습 → 아동 독립연습의 3수준으로 구성됩니다.</p>
+    <div class="flow">
+      <div class="flow-step"><span class="n">1단계</span>규칙이 적용되는 낱말을 그림과 함께 소개하기</div>
+      <div class="flow-step"><span class="n">2단계</span>음운변동 규칙 가르치기(규칙 진술)</div>
+      <div class="flow-step"><span class="n">3단계</span>표시 규약으로 음운변동 적용 원리 연습하기</div>
+      <div class="flow-step"><span class="n">4단계</span>변동이 일어나는 낱말과 그렇지 않은 낱말 분류하기</div>
+      <div class="flow-step"><span class="n">5단계</span>누적 낱말 목록에 모아 두고 이전 단원과 섞어 누적 연습하기</div>
+    </div>
+    <p style="font-size:13px;color:var(--ink-soft)">5단계 뒤에는 훈련에 쓰지 않은 낱말을 표시·촉진 없이 읽게 하는 <b>일반화 점검</b>을 각 단원마다 별도로 구성합니다(원칙 2 참고).</p>
+
+    <h3 class="sub-title"><span class="letter">다</span>오반응 수정 &amp; 촉진 감소</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>절차</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td>① 모델링</td><td>"선생님이 다시 해 볼게요." (규칙을 진술한 뒤) "그래서 [정반응]이에요."</td></tr>
+        <tr><td>② 함께</td><td>"선생님이랑 같이 해 봐요." (언어재활사와 아동이 동시에 산출한다)</td></tr>
+        <tr><td>③ 확인</td><td>"이제 ○○가 혼자 해 보세요." (정반응 시 강화한다)</td></tr>
+        <tr><td>④ 반복</td><td>오반응이 이어지면 ①로 돌아가 최대 2회 반복한 뒤 다음 문항으로, 회기 말에 해당 문항을 다시 시행</td></tr>
+      </tbody>
+    </table></div>
+    <p><b>촉진 감소</b>: 안내된 연습 안에서 촉진을 동시 산출 → 규칙의 앞부분만 언어적으로 제시 → 시각적 표시만 가리키기 → 독립적 수행 순으로 줄여갑니다. 아동이 연속 2회 정반응을 보이면 다음 촉진 수준으로 진행합니다.</p>
+    <p><b>숙달 기준</b>: 훈련 낱말은 연속 2회기 90% 이상 정확도, 비훈련 낱말은 80% 이상 정확도. 두 기준을 모두 충족해야 다음 단원에 진입하며, 충족하지 못하면 해당 단원의 3단계로 되돌아갑니다.</p>
+
+    <h3 class="sub-title"><span class="letter">라</span>8단계 지도 순서와 배열 근거</h3>
+    <p>순서: <b>종성 대표음 → 연음 → 겹받침 → 격음화·ㅎ탈락 → 경음화 → 비음화 → 유음화 → 구개음화·ㄴ첨가</b></p>
+    <ul style="padding-left:20px;font-size:13.8px">
+      <li>종성 대표음을 맨 앞에 둔 것은 경음화·비음화가 대표음을 선수 조건으로 삼기 때문</li>
+      <li>연음을 그다음에 둔 것은 표기와 발음의 불일치를 아동이 처음 경험하는 지점이자, 대표음 규칙과의 대비가 가장 선명하기 때문</li>
+      <li>경음화·비음화를 인접 배치한 것은 두 규칙의 받침 조건이 동일하고 후행 자음만 다르므로 반드시 대비하여 지도해야 하기 때문</li>
+      <li>선행 연구에서는 중재 후에도 구개음화·연음·비음화·축약어가 상대적으로 낮은 성취가 보고된 바 있어, 대상 아동의 사전 평가 결과에 따라 순서를 조정할 수 있음</li>
+    </ul>
+    <p style="font-size:13px;color:var(--ink-soft)">유의점: 연음은 엄밀히는 음운의 대치·탈락이 아니라 표기와 발음의 불일치에서 오는 음절화 현상입니다. 겹받침(자음군단순화+겹받침연음), 구개음화·ㄴ첨가는 이질적인 두 현상을 포함하므로 각각 2차시로 분할 운영합니다. 경음화는 평파열음 뒤 경음화만 명시적 중재 대상으로 삼고, 나머지 하위 유형(관형형 어미 뒤, 한자어 ㄹ뒤, 용언 어간말 비음 뒤 등)은 어휘적 노출로 처리합니다.</p>
+
+    <h3 class="sub-title"><span class="letter">마</span>페이지 구성 — 단원당 3p</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>페이지</th><th>담을 내용</th></tr></thead>
+      <tbody>
+        <tr><td>1p</td><td>① 아동용 규칙 진술(조건 '~하면' + 결과 '~가 된다' 모두 포함) · ② 도입 활동(최소대립쌍 3쌍, 듣기 비교로 규칙 발견 유도) · ③ 모델링 스크립트(시범-함께-독립 3단계를 명시적으로 구분 표시)</td></tr>
+        <tr><td>2p</td><td>④ 연습 자극(고빈도 10개+저빈도 10개, 단어 수준) · ⑤ 독립 연습 자극(구/문장 수준, 목표 변동 이외 변동이 섞이지 않도록 검토)</td></tr>
+        <tr><td>3p</td><td>⑥ 부적 예시 · ⑦ 점검 자극 10개(숙달 준거 포함) · ⑧ 참고 문헌</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="rules">
+    <div class="sec-head"><span class="sec-num">단원 참조</span></div>
+    <h2 class="sec-title">8개 음운규칙 카드</h2>
+    <p class="sec-sub">단원별로 바로 펼쳐 쓰는 참조 카드입니다. 규칙 진술문·적용 환경·핵심낱말·연습낱말과, 아동에게 설명할 때 쓰는 비유·시각화·손동작(5장 규약)을 함께 담았습니다.</p>
+
+    <details class="rule" open>
+      <summary>
+        <span class="rule-badge">1</span>
+        <span class="rule-head-text"><span class="rname">종성 대표음</span><span class="rmeta">1학년 1학기 · 선수기술: 자모 이름·소리, 받침 있는 글자 읽기</span></span>
+        <span class="rule-chevron">▾</span>
+      </summary>
+      <div class="rule-body">
+        <div class="rule-key"><span class="kw">꽃</span><span class="ph">[꼳]</span></div>
+        <div class="facts">
+          <dt>규칙 진술</dt><dd>받침 뒤에 모음이 오지 않으면, 받침은 ㄱ·ㄴ·ㄷ·ㄹ·ㅁ·ㅂ·ㅇ 일곱 개 소리 중 하나로만 소리 나요.</dd>
+          <dt>적용 환경</dt><dd>받침이 낱말 끝 또는 자음 앞에 올 때. ㄲ·ㅋ→[ㄱ] / ㅅ·ㅆ·ㅈ·ㅊ·ㅌ→[ㄷ] / ㅍ→[ㅂ]</dd>
+          <dt>혼동 규칙</dt><dd>연음(단원 2) — 받침 뒤에 모음이 오면 대표음으로 바뀌지 않고 그대로 넘어간다</dd>
+          <dt>연습낱말</dt><dd><div class="words"><span class="word">부엌<span class="ph">[부억]</span></span><span class="word">밖<span class="ph">[박]</span></span><span class="word">옷<span class="ph">[옫]</span></span><span class="word">낮<span class="ph">[낟]</span></span><span class="word">밭<span class="ph">[받]</span></span><span class="word">앞<span class="ph">[압]</span></span><span class="word">무릎<span class="ph">[무릅]</span></span><span class="word">빗<span class="ph">[빋]</span></span></div></dd>
+        </div>
+        <div class="metaphor"><span class="icon">🎩</span><div class="txt"><div class="mname">비유 — 소리 마법사 7형제 (모델링 대본 기준, 5장 표에는 미등재)</div>"받침에는 소리 마법사 7형제가 있어요. 받침에 있는 글자들이 이 일곱 소리 중 하나로 변신해서 소리 나요."</div></div>
+      </div>
+    </details>
+
+    <details class="rule">
+      <summary>
+        <span class="rule-badge">2</span>
+        <span class="rule-head-text"><span class="rname">연음</span><span class="rmeta">1학년 1학기 · 선수기술: 종성 대표음</span></span>
+        <span class="rule-chevron">▾</span>
+      </summary>
+      <div class="rule-body">
+        <div class="rule-key"><span class="kw">웃음</span><span class="ph">[우슴]</span></div>
+        <div class="facts">
+          <dt>규칙 진술</dt><dd>받침 뒤에 'ㅇ'으로 시작하는 글자가 오면, 받침이 'ㅇ' 자리로 넘어가서 소리 나요.</dd>
+          <dt>적용 환경</dt><dd>받침 뒤 모음으로 시작하는 조사·어미가 올 때. 받침은 대표음으로 바뀌지 않고 원래 소리 그대로 넘어간다(모음으로 시작 않으면 미적용, 예: 강아지)</dd>
+          <dt>혼동 규칙</dt><dd>종성 대표음(단원 1) — 뒤에 모음이 오면 대표음 규칙을 적용하지 않는다</dd>
+          <dt>연습낱말</dt><dd><div class="words"><span class="word">걸음<span class="ph">[거름]</span></span><span class="word">국어<span class="ph">[구거]</span></span><span class="word">목욕<span class="ph">[모곡]</span></span><span class="word">옷이<span class="ph">[오시]</span></span><span class="word">꽃이<span class="ph">[꼬치]</span></span><span class="word">앞으로<span class="ph">[아프로]</span></span><span class="word">밭에<span class="ph">[바테]</span></span><span class="word">낮에<span class="ph">[나제]</span></span></div></dd>
+        </div>
+        <div class="metaphor"><span class="icon">🦵</span><div class="txt"><div class="mname">비유 — 글자들의 힘겨루기</div>"글자 중 가장 힘이 약한 글자는 /ㅇ/이에요. 다른 글자들이 /ㅇ/을 만나면 발로 뻥 차고 자리를 차지해요." 예: 악어[아거] · 손동작: 파리를 쫓듯 손목을 가볍게 튕긴다</div></div>
+      </div>
+    </details>
+
+    <details class="rule">
+      <summary>
+        <span class="rule-badge">3</span>
+        <span class="rule-head-text"><span class="rname">겹받침(자음군단순화)</span><span class="rmeta">1학년 2학기 · 선수기술: 종성 대표음, 연음</span></span>
+        <span class="rule-chevron">▾</span>
+      </summary>
+      <div class="rule-body">
+        <div class="rule-key"><span class="kw">닭</span><span class="ph">[닥]</span></div>
+        <div class="facts">
+          <dt>규칙 진술</dt><dd>받침이 두 개일 때, 뒤에 자음이 오거나 아무것도 오지 않으면 둘 중 하나만 소리 나고, 뒤에 모음이 오면 앞의 하나는 남고 뒤의 하나가 넘어가요.</dd>
+          <dt>적용 환경</dt><dd>1차시 자음군단순화: ㄳ→ㄱ, ㄵ→ㄴ, ㄼ·ㄺ·ㄾ→ㄹ, ㅄ→ㅂ, ㄶ→ㄴ, ㄽ→ㄹ, ㄻ→ㅁ, ㄿ→ㅂ · 2차시 겹받침 연음: 뒤에 모음이 오면 앞 자음은 받침에 남고 뒤 자음만 넘어감</dd>
+          <dt>혼동 규칙</dt><dd>연음 — 홑받침은 받침 전체가 넘어가지만, 겹받침은 뒤의 하나만 넘어간다</dd>
+          <dt>연습낱말</dt><dd><div class="words"><span class="word">삵<span class="ph">[삭]</span></span><span class="word">앉는<span class="ph">[안는]</span></span><span class="word">여덟<span class="ph">[여덜]</span></span><span class="word">값<span class="ph">[갑]</span></span><span class="word">삶<span class="ph">[삼]</span></span><span class="word">흙<span class="ph">[흑]</span></span><span class="word">닭이<span class="ph">[달기]</span></span><span class="word">앉아<span class="ph">[안자]</span></span><span class="word">넓어<span class="ph">[널버]</span></span><span class="word">흙을<span class="ph">[흘글]</span></span></div></dd>
+        </div>
+        <div class="box no" style="margin-top:12px"><div class="box-label">예외</div>'밟다'는 ㄼ이 [ㅂ]으로 소리 나는 예외이므로 초기 목표 낱말에서 제외하고 숙달 이후 별도로 다룹니다.</div>
+        <div class="metaphor"><span class="icon">🪑</span><div class="txt"><div class="mname">비유 — 의자 쟁탈전</div>"받침 칸에 두 글자가 쏙! 의자가 좁아서 두 글자가 오면 한 글자만 대표로 소리 내요." 예: 흙[흑] · 손동작: 두 손으로 주먹을 쥐고 한 주먹으로 다른 주먹을 톡 쳐서 밀어낸다</div></div>
+      </div>
+    </details>
+
+    <details class="rule">
+      <summary>
+        <span class="rule-badge">4</span>
+        <span class="rule-head-text"><span class="rname">격음화 · ㅎ탈락</span><span class="rmeta">1학년 후기 · 선수기술: 종성 대표음, 연음</span></span>
+        <span class="rule-chevron">▾</span>
+      </summary>
+      <div class="rule-body">
+        <div class="rule-key"><span class="kw">좋다</span><span class="ph">[조타]</span></div>
+        <div class="facts">
+          <dt>규칙 진술</dt><dd>'ㅎ'은 ㄱ·ㄷ·ㅂ·ㅈ을 만나면 하나로 합쳐져 거센소리 ㅋ·ㅌ·ㅍ·ㅊ이 되고, 모음을 만나면 소리가 사라져요.</dd>
+          <dt>적용 환경</dt><dd>격음화: 받침 'ㅎ'+ㄱ/ㄷ/ㅂ/ㅈ 또는 받침 ㄱ/ㄷ/ㅂ/ㅈ+'ㅎ' · ㅎ탈락: 받침 'ㅎ' 뒤에 모음이 올 때</dd>
+          <dt>혼동 규칙</dt><dd>연음(단원 2) — 받침 'ㅎ'은 뒤로 넘어가지 않고 사라진다</dd>
+          <dt>연습낱말</dt><dd><div class="words"><span class="word">놓고<span class="ph">[노코]</span></span><span class="word">많지만<span class="ph">[만치만]</span></span><span class="word">축하<span class="ph">[추카]</span></span><span class="word">입학<span class="ph">[이팍]</span></span><span class="word">좁히다<span class="ph">[조피다]</span></span><span class="word">좋아<span class="ph">[조아]</span></span><span class="word">놓아<span class="ph">[노아]</span></span><span class="word">많아<span class="ph">[마나]</span></span><span class="word">싫어<span class="ph">[시러]</span></span></div></dd>
+        </div>
+        <div class="metaphor"><span class="icon">💨</span><div class="txt"><div class="mname">비유 — 바람의 마법사(격음화) / 부끄럼쟁이(ㅎ탈락)</div>"/ㅎ/은 후~ 하고 강한 바람을 내뿜는 마법사예요. ㄱ·ㄷ·ㅂ·ㅈ를 만나면 바람의 힘을 뿜어 ㅋ·ㅌ·ㅍ·ㅊ로 합체해요." / "/ㅎ/이 /ㅇ/을 좋아하는데 /ㅇ/을 만나면 수줍어서 숨어버려요." 예: 축하[추카], 좋아[조아] · 손동작: 입을 동그랗게 오므리고 '후' 하는 입모양(격음화) / 두 손바닥으로 눈을 가리는 손동작(ㅎ탈락)</div></div>
+      </div>
+    </details>
+
+    <details class="rule">
+      <summary>
+        <span class="rule-badge">5</span>
+        <span class="rule-head-text"><span class="rname">경음화</span><span class="rmeta">2학년 1학기 · 선수기술: 종성 대표음</span></span>
+        <span class="rule-chevron">▾</span>
+      </summary>
+      <div class="rule-body">
+        <div class="rule-key"><span class="kw">학교</span><span class="ph">[학꾜]</span></div>
+        <div class="facts">
+          <dt>규칙 진술</dt><dd>받침이 [ㄱ]·[ㄷ]·[ㅂ] 소리일 때 뒤에 ㄱ·ㄷ·ㅂ·ㅅ·ㅈ이 오면 된소리 ㄲ·ㄸ·ㅃ·ㅆ·ㅉ으로 바뀌어요.</dd>
+          <dt>적용 환경</dt><dd>받침 대표음이 ㄱ·ㄷ·ㅂ일 때 뒤에 오는 예사소리가 된소리로. 받침이 ㄴ·ㄹ·ㅁ·ㅇ이면 미적용</dd>
+          <dt>혼동 규칙</dt><dd>비음화(단원 6) — 받침 조건은 같고 뒤에 오는 소리만 다르므로 반드시 대비하여 지도</dd>
+          <dt>연습낱말</dt><dd><div class="words"><span class="word">국수<span class="ph">[국쑤]</span></span><span class="word">식당<span class="ph">[식땅]</span></span><span class="word">숙제<span class="ph">[숙쩨]</span></span><span class="word">접시<span class="ph">[접씨]</span></span><span class="word">갑자기<span class="ph">[갑짜기]</span></span><span class="word">옷장<span class="ph">[옫짱]</span></span><span class="word">젓가락<span class="ph">[젇까락]</span></span><span class="word">늦게<span class="ph">[늗께]</span></span></div></dd>
+        </div>
+        <div class="box no" style="margin-top:12px"><div class="box-label">명시적 교수 제외</div>관형사형 어미 뒤, 한자어 'ㄹ' 뒤, 용언 어간말 비음 뒤의 경음화는 규칙성이 낮아 어휘적 노출로만 처리합니다.</div>
+        <div class="metaphor"><span class="icon">💪</span><div class="txt"><div class="mname">비유 — 힘이 센 글자들의 우정</div>"글자들 중 ㄱ·ㄷ·ㅂ는 힘이 센 글자들이에요. 바로 뒤에 ㄱ·ㄷ·ㅂ·ㅅ·ㅈ를 만나면 그 힘을 더 세게 만들어줘서 ㄲ·ㄸ·ㅃ·ㅆ·ㅉ으로 변신해요." 예: 식당[식땅] · 손동작: 양손으로 주먹을 쥐고 팔을 굽혀 근육 만드는 모양</div></div>
+      </div>
+    </details>
+
+    <details class="rule">
+      <summary>
+        <span class="rule-badge">6</span>
+        <span class="rule-head-text"><span class="rname">비음화</span><span class="rmeta">2학년 2학기 · 선수기술: 종성 대표음, 경음화</span></span>
+        <span class="rule-chevron">▾</span>
+      </summary>
+      <div class="rule-body">
+        <div class="rule-key"><span class="kw">국물</span><span class="ph">[궁물]</span></div>
+        <div class="facts">
+          <dt>규칙 진술</dt><dd>받침이 [ㄱ]·[ㄷ]·[ㅂ] 소리일 때 뒤에 ㄴ이나 ㅁ이 오면, 받침이 코로 나오는 소리 [ㅇ]·[ㄴ]·[ㅁ]으로 바뀌어요.</dd>
+          <dt>적용 환경</dt><dd>ㄱ+ㄴ/ㅁ→[ㅇ] · ㄷ+ㄴ/ㅁ→[ㄴ] · ㅂ+ㄴ/ㅁ→[ㅁ]</dd>
+          <dt>혼동 규칙</dt><dd>경음화(단원 5) — 받침 조건은 같고 뒤에 오는 소리만 다르므로 반드시 대비하여 지도</dd>
+          <dt>연습낱말</dt><dd><div class="words"><span class="word">먹는<span class="ph">[멍는]</span></span><span class="word">작년<span class="ph">[장년]</span></span><span class="word">국민<span class="ph">[궁민]</span></span><span class="word">닫는<span class="ph">[단는]</span></span><span class="word">믿는<span class="ph">[민는]</span></span><span class="word">갑니다<span class="ph">[감니다]</span></span><span class="word">입는<span class="ph">[임는]</span></span><span class="word">앞문<span class="ph">[암문]</span></span></div></dd>
+        </div>
+        <p style="font-size:12.5px;color:var(--ink-faint);margin-top:8px">※ '종로','심리'처럼 받침 ㅁ·ㅇ 뒤의 'ㄹ'이 [ㄴ]으로 바뀌는 유형은 단원 7(유음화) 변별 과제에서 함께 다룹니다.</p>
+        <div class="metaphor"><span class="icon">👃</span><div class="txt"><div class="mname">비유 — 콧소리의 우정</div>"받침 ㄱ·ㄷ·ㅂ는 콧소리 친구 ㄴ이나 ㅁ을 만나면 콧소리 친구로 변신해요." 예: 국물[궁물] · 손동작: 검지손가락으로 코를 가리킨다</div></div>
+      </div>
+    </details>
+
+    <details class="rule">
+      <summary>
+        <span class="rule-badge">7</span>
+        <span class="rule-head-text"><span class="rname">유음화</span><span class="rmeta">2학년 후기 · 선수기술: 비음화</span></span>
+        <span class="rule-chevron">▾</span>
+      </summary>
+      <div class="rule-body">
+        <div class="rule-key"><span class="kw">신라</span><span class="ph">[실라]</span></div>
+        <div class="facts">
+          <dt>규칙 진술</dt><dd>'ㄴ'과 'ㄹ'이 나란히 만나면 둘 다 'ㄹ' 소리가 돼요.</dd>
+          <dt>적용 환경</dt><dd>ㄴ+ㄹ→[ㄹㄹ], ㄹ+ㄴ→[ㄹㄹ]. 받침이 ㅁ·ㅇ이면 유음화가 일어나지 않고 뒤의 'ㄹ'이 [ㄴ]으로 바뀐다(심리[심니], 종로[종노])</dd>
+          <dt>혼동 규칙</dt><dd>비음화 — '심리','종로'처럼 받침이 ㅁ·ㅇ이면 유음화가 아니다</dd>
+          <dt>연습낱말</dt><dd><div class="words"><span class="word">난로<span class="ph">[날로]</span></span><span class="word">진리<span class="ph">[질리]</span></span><span class="word">천리<span class="ph">[철리]</span></span><span class="word">칼날<span class="ph">[칼랄]</span></span><span class="word">설날<span class="ph">[설랄]</span></span><span class="word">물놀이<span class="ph">[물로리]</span></span><span class="word">줄넘기<span class="ph">[줄럼끼]</span></span><span class="word">한라산<span class="ph">[할라산]</span></span></div></dd>
+        </div>
+        <div class="box no" style="margin-top:12px"><div class="box-label">예외</div>'의견란','생산량'처럼 유음화가 일어나지 않는 한자어는 초기 목표 낱말에서 제외합니다.</div>
+        <div class="metaphor"><span class="icon">🌊</span><div class="txt"><div class="mname">비유 — 짝사랑</div>"ㄴ은 ㄹ을 짝사랑해요. 그래서 ㄴ은 ㄹ을 만나면 ㄹ로 변신해요." 예: 난로[날로] · 손동작: 양 손바닥으로 물결처럼 곡선을 만들어 웨이브한다</div></div>
+      </div>
+    </details>
+
+    <details class="rule">
+      <summary>
+        <span class="rule-badge">8</span>
+        <span class="rule-head-text"><span class="rname">구개음화 · ㄴ첨가</span><span class="rmeta">3학년 이상 · 선수기술: 연음, 비음화</span></span>
+        <span class="rule-chevron">▾</span>
+      </summary>
+      <div class="rule-body">
+        <div class="rule-key"><span class="kw">같이</span><span class="ph">[가치]</span></div>
+        <div class="facts">
+          <dt>규칙 진술</dt><dd>받침 'ㄷ','ㅌ' 뒤에 '이'가 오면 [지]·[치] 소리가 나요. 두 낱말이 합쳐질 때 앞 낱말에 받침이 있고 뒷 낱말이 '이·야·여·요·유'로 시작하면 'ㄴ' 소리가 더해져요.</dd>
+          <dt>적용 환경</dt><dd>1차시 구개음화: 받침 ㄷ/ㅌ+'이' 또는 '히'→[지]·[치] · 2차시 ㄴ첨가: 합성어·파생어에서 앞말 받침+이/야/여/요/유 → 'ㄴ' 첨가</dd>
+          <dt>혼동 규칙</dt><dd>연음 — 뒤에 오는 모음이 '이'가 아니면 구개음화가 아니라 연음만 적용된다</dd>
+          <dt>연습낱말</dt><dd><div class="words"><span class="word">굳이<span class="ph">[구지]</span></span><span class="word">맏이<span class="ph">[마지]</span></span><span class="word">밭이<span class="ph">[바치]</span></span><span class="word">해돋이<span class="ph">[해도지]</span></span><span class="word">솜이불<span class="ph">[솜니불]</span></span><span class="word">한여름<span class="ph">[한녀름]</span></span><span class="word">꽃잎<span class="ph">[꼰닙]</span></span><span class="word">담요<span class="ph">[담뇨]</span></span></div></dd>
+        </div>
+        <p style="font-size:12.5px;color:var(--ink-faint);margin-top:8px">※ '색연필','막일'은 ㄴ첨가 후 비음화가 이어지는 복합 적용 낱말이므로 단원 6(비음화) 숙달 이후에 제시합니다.</p>
+        <div class="missing"><b>비유·시각화·손동작 자료 미비</b> — 총론 5장 원본 표에 구개음화·ㄴ첨가 항목은 비어 있습니다. 다른 단원과 형식을 맞춰 새로 개발하거나, 교수님과 상의해 보완이 필요한 부분입니다.</div>
+      </div>
+    </details>
+  </section>
+
+  <section id="words">
+    <div class="sec-head"><span class="sec-num">자료 07</span></div>
+    <h2 class="sec-title">낱말은행 사용법 — 교과서 어휘 엑셀</h2>
+    <p class="sec-sub">첨부된 <b>「초등학교 1~4학년 교과서 어휘」</b> 파일은 국어·수학·사회·과학 등 교과서에서 뽑은 1,330개 낱말에 학년·실제 발음·적용된 음운규칙을 표시해 둔 낱말은행입니다. 훈련 낱말이 아니라 주로 <b>저빈도 점검자극과 일반화 점검 낱말</b>을 고를 때 사용합니다.</p>
+
+    <h3 class="sub-title"><span class="letter">가</span>파일 구조</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>열</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td>학년(교과 출처)</td><td>예: 국어(4-1), 사회(3-2), 수학(1~2학년) 등 18개 교과·학기 구분</td></tr>
+        <tr><td>어휘</td><td>표기형</td></tr>
+        <tr><td>실제 발음</td><td>[ ] 안 표기</td></tr>
+        <tr><td>적용된 음운규칙</td><td>단일 규칙 또는 '경음화+7종성'처럼 복합 규칙 표시</td></tr>
+        <tr><td>비고(태그)</td><td>[확실] / [모호] — 모호 태그는 사용 전 재검토 필요</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="sub-title"><span class="letter">나</span>학년별 수록 규모</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>학년군</th><th class="num">낱말 수(대략)</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>1~2학년(국어·수학·봄여름·가을겨울)</td><td class="num">약 80</td><td>고빈도 위주, 8단계 중 ①~④ 단계 중심</td></tr>
+        <tr><td>3학년(국어·사회·과학)</td><td class="num">약 448</td><td>경음화·연음 비중 가장 큼</td></tr>
+        <tr><td>4학년(국어·사회·과학·수학)</td><td class="num">약 802</td><td>2개 이상 규칙이 겹치는 '복합' 유형 비중 증가</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3 class="sub-title"><span class="letter">다</span>음운규칙별 분포 상위 항목</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>적용된 음운규칙</th><th class="num">낱말 수</th></tr></thead>
+      <tbody>
+        <tr><td>경음화</td><td class="num">361</td></tr>
+        <tr><td>연음화</td><td class="num">359</td></tr>
+        <tr><td>격음화</td><td class="num">118</td></tr>
+        <tr><td>경음화+7종성(복합)</td><td class="num">110</td></tr>
+        <tr><td>7종성(종성 대표음)</td><td class="num">70</td></tr>
+        <tr><td>비음화+7종성(복합)</td><td class="num">39</td></tr>
+        <tr><td>유음화</td><td class="num">38</td></tr>
+        <tr><td>자음군단순화(겹받침)</td><td class="num">33</td></tr>
+        <tr><td>비음화</td><td class="num">18</td></tr>
+        <tr><td>구개음화</td><td class="num">12</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:12.5px;color:var(--ink-faint)">※ 구개음화·ㄴ첨가처럼 교과서 수록 낱말이 적은 규칙은 총론 6장에서 표준 ㄴ첨가 낱말 6개(내복약·한여름·담요·물약·늦여름·앞일)를 보충 어휘로 추가해 두었으니 함께 참고하세요.</p>
+
+    <h3 class="sub-title"><span class="letter">라</span>점검자극 고르는 순서</h3>
+    <div class="flow">
+      <div class="flow-step"><span class="n">1</span>이번 단원의 목표 음운규칙으로 '적용된 음운규칙' 열을 필터</div>
+      <div class="flow-step"><span class="n">2</span>대상 아동 학년에 맞는 교과 행 위주로 우선 확인(단, 저빈도가 목적이면 상위 학년 어휘도 활용 가능)</div>
+      <div class="flow-step"><span class="n">3</span>이번 단원 훈련 낱말과 겹치지 않는 낱말을 선택</div>
+      <div class="flow-step"><span class="n">4</span>비고란이 [확실]인 항목을 우선 사용, [모호]는 실제 발화로 재확인 후 사용</div>
+    </div>
+  </section>
+
+  <section id="checklist">
+    <div class="sec-head"><span class="sec-num">검수</span></div>
+    <h2 class="sec-title">단원 제작 최종 체크리스트</h2>
+    <p class="sec-sub">단원 하나를 다 만든 뒤, 제출 전에 아래 항목을 확인하세요. 원칙 1~4의 핵심을 한 장으로 모았습니다.</p>
+    <ul class="checklist">
+      <li><span class="qn">1</span><input type="checkbox">목표 규칙 외 음운변동이 섞이지 않았는지 실제로 발음해 확인했다 (원칙 1-라)</li>
+      <li><span class="qn">2</span><input type="checkbox">연습 낱말은 2~3음절, 고빈도 10개 + 저빈도 10개로 구성했다 (원칙 1-마)</li>
+      <li><span class="qn">3</span><input type="checkbox">최소대립쌍 도입 활동은 조건 하나만 다른 낱말 쌍으로 만들었다 (원칙 1-다)</li>
+      <li><span class="qn">4</span><input type="checkbox">예외 낱말(밟다 등)은 규칙 지도에서 빼고 일견단어로 별도 표시했다 (원칙 1-바)</li>
+      <li><span class="qn">5</span><input type="checkbox">점검자극은 훈련 낱말을 재사용하지 않은 미훈련 저빈도 낱말이다 (원칙 2)</li>
+      <li><span class="qn">6</span><input type="checkbox">용언 점검자극은 어간을 유지하고 어미만 바꿔 만들었다 (원칙 2-다)</li>
+      <li><span class="qn">7</span><input type="checkbox">부적 예시 5개를 예상되는 과잉일반화 유형에 맞춰 배치했다 (원칙 3)</li>
+      <li><span class="qn">8</span><input type="checkbox">대조 카드는 그림→표기→발음→핵심 조건 형식을 동일하게 맞췄다 (원칙 3-다)</li>
+      <li><span class="qn">9</span><input type="checkbox">시범-함께-독립 3단계를 스크립트에 명시적으로 구분해 표시했다 (원칙 4-나)</li>
+      <li><span class="qn">10</span><input type="checkbox">숙달 기준을 수치로 명시했다 (훈련 90%·비훈련 80%, 연속 2회기) (원칙 4-다)</li>
+      <li><span class="qn">11</span><input type="checkbox">전체 3p(도입·연습·점검) 구성과 참고문헌 표기를 확인했다 (원칙 4-마)</li>
+    </ul>
+  </section>
+
+  <section id="refs">
+    <div class="sec-head"><span class="sec-num">09</span></div>
+    <h2 class="sec-title">참고문헌</h2>
+    <ul class="refs" style="padding-left:0;list-style:none">
+      <li>김미배, 배소영 (2011). 읽기부진 아동과 일반 아동의 문법형태소 인식 능력 비교. 언어청각장애연구, 16(4), 481-496.</li>
+      <li>김수진, 이지영 (2008). 음운변동이 적용되는 단어의 읽기중재 효과. Communication Sciences &amp; Disorders(언어청각장애연구), 13(1), 26-43.</li>
+      <li>김애화, 김의정, 이윤미, 박현숙 (2012). 일반학생과 읽기장애학생의 단어인지 정확도 및 속도 특성 연구. Communication Sciences &amp; Disorders(언어청각장애연구), 17(3), 508-519.</li>
+      <li>심현섭 (2003). 무의미 음절 따라말하기를 통한 단순조음음운장애아동과 정상아동의 음운기억 수행능력 비교연구. 언어청각장애연구, 8(2), 127-145.</li>
+      <li>이고은, 임유경, 이현진, 이혜원 (2025). 한국어 단어 재인에서 음운 규칙의 적용도 연구. 한국심리학회지: 인지 및 생물, 37(2), 41-53.</li>
+      <li>이은숙, 배소영, 권유선 (2005). 학령기 아동의 파생어 형태소 인식 능력 발달. 언어청각장애연구, 10(2), 21-36.</li>
+      <li>이혜련, 김재옥 (2025). 다감각접근법에 기반한 음운변동 중재가 아동양육시설 읽기부진 초등학생의 읽기에 미치는 효과. Communication Sciences and Disorders, 30(1), 60-75.</li>
+      <li>전예지, 강민경, 연석정 (2023). 과제 유형(읽기,쓰기)에 따른 난독아동의 음운변동 오류 특성. Communication Sciences &amp; Disorders, 28(1), 52-70.</li>
+      <li>정경희 (2014). 1-3학년 학령기 아동의 형태소인식과 읽기능력. Communication Sciences &amp; Disorders, 19(1), 21-30.</li>
+      <li>Preston, J. L., Leece, M. C., &amp; Storto, J. (2019). Tutorial: Speech Motor Chaining Treatment for School-Age Children With Speech Sound Disorders. Language, Speech, and Hearing Services in Schools, 50(3), 343-355.</li>
+    </ul>
+  </section>
+
+
+  <footer>
+    「음운변동 중재 교재」 총론 ver.3 및 초등학교 1~4학년 교과서 어휘 자료를 바탕으로 정리한 제작 안내서입니다. 표기·발음 예시에 이견이 있는 항목은 담당 교수님과 함께 재확인해 주세요.
+  </footer>
+</div>
